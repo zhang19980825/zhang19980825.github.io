@@ -11,7 +11,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
     <meta name="keywords" content="Fechin,"> 
-    <meta name="description" content="由于Mybatis和Spring框架中都大量使用了代理模式，所以先讲一下代理模式，据我所知，代理模式一般有两种实现，一种是通过组合的方式来实现代理模式这种实现方式比较简单，可以看看菜鸟教程的代理模式,"> 
+    <meta name="description" content="关于具体的框架的搭建就不往上贴了，不会的话看一下这个链接：https://www.cnblogs.com/fangjet/p/7639606.html
+Mybatis框架源码分析：//读取配置文件I,"> 
     <meta name="author" content="ZhangYang"> 
     <link rel="alternative" href="atom.xml" title="知人者智，自知者明。" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -53,7 +54,7 @@
         </div>
         <div class="content markdown">
             <p>关于具体的框架的搭建就不往上贴了，不会的话看一下这个链接：<a href="https://www.cnblogs.com/fangjet/p/7639606.html" target="_blank" rel="noopener">https://www.cnblogs.com/fangjet/p/7639606.html</a></p>
-<h2 id="Mybatis框架源码分析："><a href="#Mybatis框架源码分析：" class="headerlink" title="Mybatis框架源码分析："></a>Mybatis框架源码分析：</h2><p><img src="http://img.027cgb.com/613363/%E5%9B%BE%E7%89%871.png" alt="avatar"><br>//读取配置文件<br>InputStream inputstream=Resources.getResourcesAsStream(“mybatis-config.xml”);<br>//创建sqlSessionFactory对象<br>SqlSessionFactory sqlsessionFactory=new SqlSessionFactoryBuilder()  .build(inputStream);<br>//创建SqlSession对象<br>session=sqlsessionFactory.openSession();<br>//操作<br>session.insert(“insertStu”,student)<br>//提交<br>session.commit();<br>session.close();  </p>
+<h2 id="Mybatis框架源码分析："><a href="#Mybatis框架源码分析：" class="headerlink" title="Mybatis框架源码分析："></a>Mybatis框架源码分析：</h2><p><img src="http://i2.bvimg.com/672650/26ca5f5b831916bd.png" alt="avatar"><br>//读取配置文件<br>InputStream inputstream=Resources.getResourcesAsStream(“mybatis-config.xml”);<br>//创建sqlSessionFactory对象<br>SqlSessionFactory sqlsessionFactory=new SqlSessionFactoryBuilder()  .build(inputStream);<br>//创建SqlSession对象<br>session=sqlsessionFactory.openSession();<br>//操作<br>session.insert(“insertStu”,student)<br>//提交<br>session.commit();<br>session.close();  </p>
 <p>SqlSessionFactory sqlsessionFactory=new SqlSessionFactoryBuilder().build(inputStream);<br>首先把MyBatis的配置文件封装成IO流的方式，再者就是创建sqlsessionFactory的过程，这里面采用了工厂模式来生成sqlsessionFactory的实例，用SqlSessionFactoryBuilder的build方法，build方法里面有一个自己的重载的过程，这是因为在这里可以改变Mybatis配置文件中的properties,environment等信息，真正在build方法里面实现的还是用XMLConfigBuilder的parse（）方法来实现对mybatis配置文件的一个解析，这个parse方法返回的configuration对象就有了配置文件的一些信息，这个configuration对象会作为build方法的一个参数，调用build方法其实就是新建了一个DefaultSqlSessionFactory对象，他是SqlSessionFactory的实现类，也就是说最后返回的就是DefaultSqlSessionFactory对象</p>
 <p>session=sqlsessionFactory.openSession();<br>由sqlsessionFactory这个工厂来创造sqlsession对象，返回的还是defaultSqlSession对象，这个对象里面有一些属性，比如dirty，autocommit，executor等一些属性</p>
 <p>session.insert(“insertStu”,student)    （insertStu是映射文件的id）<br>这个方法里面可以帮我们找到三个问题的答案:<br>1.mybatis是如何把insertStu与映射文件的id对应起来的？<br>2.mybatis如何把数据绑定到sql语句中？<br>3.mybatis如何输送sql语句？<br>insert方法其实调用的是update方法，里面会传入上面的两个参数，当sqlsession对象在执行的时候，他要根据configuration对象的mapper映射的id找到当前执行的sql语句，同时通过对应关系把值赋值到对应的 sql语句中 ，下来就是执行器Executor进行sql语句的执行工作，这里面应该就是封装的一些jdbc的操作，来完成对数据库的交互工作，在这个操作之前，会有MapperStatement对象将赋值内容和sql占位符进行绑定的一个操作。</p>
