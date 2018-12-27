@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="IoC 全称为 Inversion of Control，翻译为 “控制反转”，它还有一个别名为 DI（Dependency Injection）,即依赖注入。谁控制谁：在传统的开发模式下，我们都是,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head>
+</html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">SpringIoc源码分析（一）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">SpringIoc源码分析（一）</h1>
+        <div class="stuff">
+            <span>十二月 27, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>IoC 全称为 Inversion of Control，翻译为 “控制反转”，它还有一个别名为 DI（Dependency Injection）,即依赖注入。<br>谁控制谁：在传统的开发模式下，我们都是采用直接 new 一个对象的方式来创建对象，也就是说你依赖的对象直接由你自己控制，但是有了 IOC 容器后，则直接由 IoC 容器来控制。所以“谁控制谁”，当然是 IoC 容器控制对象。<br>控制什么：控制对象。<br>为何是反转：没有 IoC 的时候我们都是在自己对象中主动去创建被依赖的对象，这是正转。但是有了 IoC 后，所依赖的对象直接由 IoC 容器创建后注入到被注入的对象中，依赖的对象由原来的主动获取变成被动接受，所以是反转。<br>哪些方面反转了：所依赖对象的获取被反转了。<br>IOC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、stter方法注入、接口注入。<br>构造器注入，顾名思义就是被注入的对象通过在其构造方法中声明依赖对象的参数列表，让外部知道它需要哪些依赖对象。<br>对于 JavaBean 对象而言，我们一般都是通过 getter 和 setter 方法来访问和设置对象的属性。所以，当前对象只需要为其所依赖的对象提供相对应的 setter 方法，就可以通过该方法将相应的依赖对象设置到被注入对象中。<br>接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。<br>Spring IoC容器的初始化过程主要包括以下几个步骤：<br>1.获取Resouce实例。加载XML配置文件，封装成Resouce实例。这时Resouce实例中已经有了配置文件的路径等信息。<br>2.获取Document实例。通过Resource，读取XML配置文件，封装成Document实例。这时Document实例中已经有了配置文件中的标签。<br>3.获取BeanDefinition实例。解析Document实例中的标签，最终获得BeanDefinition实例。这时BeanDefinition实例中已经有了bean的id、name、alias、class等信息。<br>4.注册BeanDefinition。这个注册过程把BeanDefinition向IOC容器进行注册，相当于将bean的name作为key，BeanDefinition作为value，放入一个map中。<br>IOC容器初始化过程一般不包含Bean加载的实现。Bean加载一般发生在应用第一次通过getBean向容器索取Bean的时候。但有一个例外：如果在XML文件中为Bean定义了lazy-init属性，那么Bean的加载在IOC容器初始化时就预先完成了。<br>SpringIoc容器的bean的加载步骤总结如下：<br>1.获取bean的真正名字（name可能是别名或者FactoryBean）。<br>2.尝试从缓存中加载单例bean。<br>单例bean在同一个Spring容器中只创建一次，获取bean的时候，尝试从缓存加载bean。首先从一级缓存singletonObjects中获取，如果没有获取到，且bean正在创建过程中  （isSingletonCurrentlyInCreation()为true），则尝试从二级缓存earlySingletonObjects中获取，如果还获取不到，就求助于三级缓存singletonFactories。因为spring创建单例bean的时候，存在循环依赖的问题。比如创建bean a的时候发现bean a引用了bean b，此时会去创建bean b，但又发现bean b引用了bean c，所以此时会去创建bean c，在创建bean c的过程中发现bean c引用bean a。为了避免循环依赖，Spring采取了一种将正在创建的bean实例提早暴露加入到singletonFactories缓存中，一旦下一个bean创建的时候需要依赖上个bean，则直接使用singletonFactories来获取bean。提前暴露bean实例到缓存的时机是在bean实例创建（调用构造方法）之后，初始化bean实例（属性注入）之前<br>3.如果从缓存中加载到了单例bean，从bean实例中获取对象并返回。从缓存中加载到的bean并不一定是我们最终想要的bean。  BeanFactory是用于管理bean的一个工厂。<br>FactoryBean是一种特殊的bean。在BeanFactory中管理两种bean，一种是标准的Java bean，另一种实现了FactoryBean接口的bean。<br>通过beanFactory.getBean(beanName)从BeanFactory获取bean实例时，对于标准的Java bean，返回的是类自身的实例。而对于FactoryBean，返回的不是自身的实例，而是该FactoryBean的getObject方法所返回的实例。如果想要获取FactoryBean的实例，可以通过getBean(&amp;+beanName)这种方法来获取。<br>4.原型模式的依赖检查。prototype的Bean，Spring容器不进行缓存。如果是prototype的Bean处于正在创建的状态，直接抛出异常。<br>5.递归加载依赖的bean。如果此bean依赖了其他的bean，则需要递归加载依赖的bean。<br>6.因为在缓存中没有加载到单例bean。 如果是单例模式，创建单例bean。如果是原型模式，创建原型bean。<br>1.清除缓存。如果是bean是单例bean，需要首先清除缓存。<br>2.创建bean实例。<br>在spring中有三中实例化bean的方式：<br>1)使用构造器实例化；采用这种实例化方式要注意的是：要实例化的类中如果有构造器的话，一定要有一个无参的构造器。<br>2)使用静态工厂方法实例化；<br>3)使用实例化工厂方法实例化。<br>3.避免循环依赖。为了避免循环依赖，可以在 bean初始化完成前将创建实例的 ObjectFactory加入工厂。<br>4.属性注入。将所有属性填充至bean的实例中。<br>5.初始化bean。<br>6.循环依赖检查。Sping 中解决循环依赖只对单例有效，而对于prototype的bean，Spring 没有好的解决办法，唯一要做的就是抛出异常。在这个步骤里面会检测已经加载的 bean 是否已经出现了依赖循环，并判断是否需要抛出异常。<br>7.注册DisposableBean。<br>8.完成创建并返回。<br>bean的生命周期<br>1.实例化。Spring对Bean进行实例化（默认是单例）<br>2.属性注入。Spring将值和Bean的引用注入进Bean对应的属性中<br>3.3初始化。<br>如果Bean实现了BeanNameAware接口，Spring将Bean的ID传递给setBeanName()方法。<br>如果Bean实现了BeanFactoryAware接口，Spring将调用setBeanDactory(BeanFactory bf)方法并把BeanFactory容器实例作为参数传入。<br>如果Bean实现了ApplicationContextAwaer接口，Spring容器将调用setApplicationContext(ApplicationContext ctx)方法，把应用上下文作为参数传入。<br>如果Bean实现了BeanPostProcess接口，Spring将调用它们的postProcessBeforeInitialization方法。<br>如果Bean实现了InitializingBean接口，Spring将调用它们的afterPropertiesSet方法，作用与在配置文件中对Bean使用init-method声明初始化的作用一样，都是在Bean的全部属性设置成功后执行的初始化方法。<br>如果Bean实现了BeanPostProcess接口，Spring将调用它们的postProcessAfterInitialization方法。<br>4.注册DispostbleBean。<br>5.经过以上的工作后，Bean将一直驻留在应用上下文中给应用使用，直到应用上下文被销毁。<br>Bean实例销毁前，如果Bean实现了DispostbleBean接口，Spring将调用它的destory方法。  </p>
+<p>Spring单例对象的初始化其实可以分为三步：（实例化、填充属性、初始化）<br>这样做有什么好处呢？让我们来分析一下“A的某个field或者setter依赖了B的实例对象，同时B的某个field或者setter依赖了A的实例对象”这种循环依赖的情况。A首先完成了初始化的第一步，并且将自己提前曝光到singletonFactories中，此时进行初始化的第二步，发现自己依赖对象B，此时就尝试去get(B)，发现B还没有被create，所以走create流程，B在初始化第一步的时候发现自己依赖了对象A，于是尝试get(A)，尝试一级缓存singletonObjects(肯定没有，因为A还没初始化完全)，尝试二级缓存earlySingletonObjects（也没有），尝试三级缓存singletonFactories，由于A通过ObjectFactory将自己提前曝光了，所以B能够通过ObjectFactory.getObject拿到A对象(虽然A还没有初始化完全，但是总比没有好呀)，B拿到A对象后顺利完成了初始化阶段1、2、3，完全初始化之后将自己放入到一级缓存singletonObjects中。此时返回A中，A此时能拿到B的对象顺利完成自己的初始化阶段2、3，最终A也完成了初始化，长大成人，进去了一级缓存singletonObjects中，</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E9%87%91%E7%8E%9F%E5%B2%90%20-%20%E5%B2%81%E6%9C%88%E7%A5%9E%E5%81%B7%20(Demo).mp3"></li>
+                    
+                        <li title="3" data-url="http://dl.stream.qqmusic.qq.com/M800004DXFlC0nsTCZ.mp3?vkey=2DBF141615E205FFEA6C47D286B98FA9EF11D746BAECBD2E68B3B1633646B5F89173F64800005B220B45E10B640D4CA836451CDCD4E25363&guid=5150825362&fromtag=1"></li>
+                    
+                        <li title="4" data-url="http://dl.stream.qqmusic.qq.com/M800000uhMwj387EBp.mp3?vkey=A49F695E0CA7D4ABCFCD32B13C9B020D7ABB6737E73B7C52FD691D136A5942B6B9B116A3B9A0912015FD5D0874EF1831528E808F833E9944&guid=5150825362&fromtag=1"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
