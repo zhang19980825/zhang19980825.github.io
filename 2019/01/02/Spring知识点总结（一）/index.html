@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="SpringIoc：1.什么是Ioc容器：所谓的IoC容器就是指的Spring中Bean工厂里面的Map存储结构（存储了Bean的实例）。2.Spring中的框架工厂：ApplicationCont,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head>
+</html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Spring知识点总结（一）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Spring知识点总结（一）</h1>
+        <div class="stuff">
+            <span>一月 02, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Spring知识点总结（一）/">Spring知识点总结（一）</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p>SpringIoc：<br>1.什么是Ioc容器：<br>所谓的IoC容器就是指的Spring中Bean工厂里面的Map存储结构（存储了Bean的实例）。<br>2.Spring中的框架工厂：<br>ApplicationContext接口（）：实现了BeanFactory接口   实现ApplicationContext接口的工厂，可以获取到容器中具体的Bean对象<br>BeanFactory工厂（是Spring框架早期的创建Bean对象的工厂接口）：<br>其实通过源码分析，不管是BeanFactory还是ApplicationContext，其实最终的底层BeanFactory都是DefaultListableBeanFactory<br>3.ApplicationContext和BeanFactory的区别？<br>创建Bean对象的时机不同:<br>BeanFactory采取延迟加载，第一次getBean时才会初始化Bean。<br>ApplicationContext是加载完applicationContext.xml时，就创建具体的Bean对象的实例。（只对BeanDefition中描述为是单例的bean，才进行饿汉式加载）<br>4.Web应用中创建IoC容器：<br>1）web服务器（tomcat）启动会加载web.xml（启动ContextLoaderListener监听器，实现了ServletContextListener接口）<br>2）ContextLoaderListener监听器会在web容器启动的时候，触发contextInitialized()<br>3）contextInitialized()方法会调用initWebApplicationContext()方法，该方法负责创建Spring容器（DefaultListableBeanFactory）。<br>4）ContextLoader类中创建Spring容器并初始化容器中的Bean实例<br>5）最终调用configureAndRefreshWebApplicationContext方法中调用最终初始化Bean的refresh方法<br>5.bean标签<br>作用：用于配置对象让 spring 来创建的。<br>默认情况下它调用的是类中的无参构造函数。如果没有无参构造函数则不能创建成功。<br>id：给对象在容器中提供一个唯一标识。用于获取对象。<br>class：指定类的全限定类名。用于反射创建对象。默认情况下调用无参构造函数。<br>scope：指定对象的作用范围<br>6.bean的作用范围：<br>单例对象：scope=”singleton”<br>一个应用只有一个对象的实例。它的作用范围就是整个引用。<br>生命周期：<br>对象出生：当应用加载，创建容器时，对象就被创建了。<br>对象活着：只要容器在，对象一直活着。<br>对象死亡：当应用卸载，销毁容器时，对象就被销毁了。<br>多例对象：scope=”prototype”<br>每次访问对象时，都会重新创建对象实例。<br>生命周期：<br>对象出生：当使用对象时，创建新的对象实例。<br>对象活着：只要对象在使用中，就一直活着。<br>对象死亡：当对象长时间不用时，被 java 的垃圾回收器回收了。<br>7.实例化bean的三种方式?<br>第一种：使用默认无参构造函数（重点）如果 bean 中没有默认无参构造函数，将会创建失败<br>第二种：静态工厂（了解）模拟一个静态工厂，创建业务层实现类<br>public class StaticFactory {<br>public static UserService createUserService(){<br>return new UserServiceImpl();}<br>}  使用 StaticFactory 类中的静态方法 createUserService 创建对象，并存入 spring 容器<br>    id 属性：指定 bean 的 id，用于从容器中获取<br>    class 属性：指定静态工厂的全限定类名<br>    factory-method 属性：指定生产对象的静态方法<br>第三种：实例工厂（了解）拟一个实例工厂，创建业务层实现类 此工厂创建对象，必须现有工厂实例对象，再调用方法<br>此种方式是：先把工厂的创建交给 spring 来管理。<br>        然后在使用工厂的 bean 来调用里面的方法<br>                    factory-bean 属性：用于指定实例工厂 bean 的 id。<br>                    factory-method 属性：用于指定实例工厂中创建对象的方法。<br>8.Spring依赖注入<br>什么是依赖？<br>依赖指的就是Bean实例中的属性<br>属性分为：简单类型（8种基本类型和String类型）的属性、POJO类型的属性、集合数组类型的属性。<br>什么是依赖注入？<br>依赖注入：Dependency Injection。它是 spring 框架核心 ioc 的具体实现。<br>为什么要进行依赖注入？<br>我们的程序在编写时，通过控制反转，把对象的创建交给了 spring，但是代码中不可能出现没有依赖的情况。<br>ioc 解耦只是降低他们的依赖关系，但不会消除。例如：我们的业务层仍会调用持久层的方法。那这种业务层和持久层的依赖关系，在使用 spring 之后，就让 spring 来维护了。<br>简单的说，就是坐等框架把持久层对象传入业务层，而不用我们自己去获取<br>9.Spring依赖注入的方式<br>1）构造函数注入<br>2）set方法注入（重点） set方法注入又分为手动装配方式注入和自动装配方式注入。<br>手动装配方式（XML方式）：bean标签的子标签property，需要在类中指定set方法。<br>自动装配方式（注解方式）：@Autowired注解、@Resource注解。<br>@Autowired：一部分功能是查找实例，从spring容器中根据类型（java类）获取对应的实例。另一部分功能就是赋值，将找到的实例，装配给另一个实例的属性值。（注意事项：一个java类型在同一个spring容器中，只能有一个实例）<br>@Resource：一部分功能是查找实例，从spring容器中根据Bean的名称（bean标签的名称）获取对应的实例。另一部分功能就是赋值，将找到的实例，装配给另一个实例的属性值。<br>10.依赖注入不同类型的属性（基于XML）<br>简单类型（value）<br>引用类型（ref）<br>集合类型（数组）  数组或者List集合，  Set集合     Map集合    Properties集合的方式<br>11.依赖注入常用注解<br>?@Component   把资源让 spring 来管理。相当于在 xml 中配置一个 bean。<br>   @Controller、@Service、@Repository注解 是@Component的衍生注解<br>?@Autowired<br>默认按类型装配（byType）<br>这个注解是spring自身的<br>默认情况下必须要求依赖对象必须存在，如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)<br>如果我们想使用名称装配可以结合@Qualifier注解进行使用<br>?@Resource<br>默认按照名称（byName）进行装配，名称可以通过name属性进行指定<br>如果没有指定name属性，当注解写在字段上时，默认取字段名进行按照名称查找，当找不到与名称匹配的bean时才按照类型进行装配。<br>12.Spring整合junit<br>第一步：添加依赖  添加spring-test包即可。<br>第二步：通过@RunWith注解，指定spring的运行器    Spring的运行器是SpringJunit4ClassRunner<br>第三步：通过@ContextConfiguration注解，指定spring运行器需要的配置文件路径<br>第四步：通过@Autowired注解给测试类中的变量注入数据<br>13SpringAop的作用及优势是什么？<br>作用：<br>AOP采取横向抽取机制，取代了传统纵向继承体系重复性代码（性能监视、事务管理、安全检查、缓存）<br>在程序运行期间，不修改源码对已有方法进行增强。<br>将业务逻辑和系统处理的代码（关闭连接、事务管理、操作日志记录）解耦。<br>优势：<br>减少重复代码<br>提高开发效率<br>维护方便<br>14.AOP相关术语介绍 </p>
+<ol>
+<li>Joinpoint(连接点)   – 所谓连接点是指那些被拦截到的点。在spring中,这些点指的是方法,因为spring只支持方法类型的连接点  </li>
+<li>Pointcut(切入点)        – 所谓切入点是指我们要对哪些Joinpoint进行拦截的定义  </li>
+<li>Advice(通知/增强)    – 所谓通知是指拦截到Joinpoint之后所要做的事情就是通知.通知分为前置通知,后置通知,异常通知,最终通知,环绕通知(切面要完成的功能)  </li>
+<li>Introduction(引介) – 引介是一种特殊的通知在不修改类代码的前提下, Introduction可以在运行期为类动态地添加一些方法或Field  </li>
+<li>Target(目标对象)     – 代理的目标对象  </li>
+<li>Weaving(织入)      – 是指把增强应用到目标对象来创建新的代理对象的过程  </li>
+<li>Proxy（代理）        – 一个类被AOP织入增强后，就产生一个结果代理类  </li>
+<li>Aspect(切面)           – 是切入点和通知的结合，以后咱们自己来编写和配置的<br>15.AOP实现之AspectJ（了解）<br>AspectJ是一个java实现的AOP框架，它能够对java代码进行AOP编译（一般在编译期进行），让java代码具有AspectJ的AOP功能（当然需要特殊的编译器）<br>可以这样说AspectJ是目前实现AOP框架中最成熟，功能最丰富的语言，更幸运的是，AspectJ与java程序完全兼容，几乎是无缝关联，因此对于有java编程基础的工程师，上手和使用都非常容易。<br>了解AspectJ应用到java代码的过程（这个过程称为织入），对于织入这个概念，可以简单理解为aspect(切面)应用到目标函数(类)的过程。<br>对于这个过程，一般分为动态织入和静态织入，动态织入的方式是在运行时动态将要增强的代码织入到目标类中，这样往往是通过动态代理技术完成的，如Java JDK的动态代理(Proxy，底层通过反射实现)或者CGLIB的动态代理(底层通过继承实现)，Spring AOP采用的就是基于运行时增强的代理技术<br>ApectJ采用的就是静态织入的方式。ApectJ主要采用的是编译期织入，在这个期间使用AspectJ的acj编译器(类似javac)把aspect类编译成class字节码后，在java目标类编译时织入，即先编译aspect类再编译目标类。<br>16.Spring AOP是通过动态代理技术实现的<br>而动态代理是基于反射设计的。（关于反射的知识，请自行学习）<br>动态代理技术的实现方式有两种：基于接口的JDK动态代理和基于继承的CGLib动态代理。<br>JDK动态代理：目标对象必须实现接口<br>CGLib动态代理：目标对象不需要实现接口，底层是通过继承目标对象产生代理子对象（代理子对象中继承了目标对象的方法，并可以对该方法进行增强）<br>17.基于AspectJ的XML实现和基于AspectJ的注解实现（源码就不贴了）<br>18.SpringAop通知类型<br>通知类型（五种）：前置通知、后置通知、最终通知、环绕通知、异常抛出通知。<br>前置通知：<br>执行时机：目标对象方法之前执行通知<br>配置文件：&lt;aop:before method=”before” pointcut-ref=”myPointcut”/&gt;<br>应用场景：方法开始时可以进行校验<br>后置通知：<br>执行时机：目标对象方法之后执行通知，有异常则不执行了<br>配置文件：&lt;aop:after-returning method=”afterReturning” pointcut-ref=”myPointcut”/&gt;<br>应用场景：可以修改方法的返回值<br>最终通知：<br>执行时机：目标对象方法之后执行通知，有没有异常都会执行<br>配置文件：&lt;aop:after method=”after” pointcut-ref=”myPointcut”/&gt;<br>应用场景：例如像释放资源<br>环绕通知：<br>执行时机：目标对象方法之前和之后都会执行。<br>配置文件：&lt;aop:around method=”around” pointcut-ref=”myPointcut”/&gt;<br>应用场景：事务、统计代码执行时机<br>异常抛出通知：<br>执行时机：在抛出异常后通知<br>配置文件：&lt;aop:after-throwing method=” afterThrowing “ pointcut- ref=”myPointcut”/&gt;<br>应用场景：包装异常  </li>
+</ol>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E9%87%91%E7%8E%9F%E5%B2%90%20-%20%E5%B2%81%E6%9C%88%E7%A5%9E%E5%81%B7%20(Demo).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E5%8C%85%E5%B8%88%E8%AF%AD%20-%20%E5%AE%89%E5%92%8C%E6%A1%A5%20(%E6%AD%A3%E7%BB%8F%E7%89%88%E6%9C%AC).mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E9%B9%BF%E5%85%88%E6%A3%AE%E4%B9%90%E9%98%9F%20-%20%E6%98%A5%E9%A3%8E%E5%8D%81%E9%87%8C.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="7" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E6%97%A0%E9%97%AE.mp3"></li>
+                    
+                        <li title="8" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="9" data-url="http://img.027cgb.com/613363/%E7%94%B0%E9%A6%A5%E7%94%84%20-%20%E7%88%B1%E4%BA%86%E5%BE%88%E4%B9%85%E7%9A%84%E6%9C%8B%E5%8F%8B.mp3"></li>
+                    
+                        <li title="10" data-url="http://img.027cgb.com/613363/%E6%9D%A8%E5%AE%97%E7%BA%AC%20-%20%E4%B8%80%E5%9C%BA%E6%81%8B%E7%88%B1.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
