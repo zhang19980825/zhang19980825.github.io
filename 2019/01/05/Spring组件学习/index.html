@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="SpringIoc：1.什么是Ioc容器：所谓的IoC容器就是指的Spring中Bean工厂里面的Map存储结构（存储了Bean的实例）。2.Spring中的框架工厂：ApplicationCont,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head>
+</html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Spring组件学习</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Spring组件学习</h1>
+        <div class="stuff">
+            <span>一月 05, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Spring组件学习/">Spring组件学习</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="Spring组件学习"><a href="#Spring组件学习" class="headerlink" title="Spring组件学习"></a>Spring组件学习</h1><h2 id="一-Spring应用之SpringJdbc实现："><a href="#一-Spring应用之SpringJdbc实现：" class="headerlink" title="一.Spring应用之SpringJdbc实现："></a>一.Spring应用之SpringJdbc实现：</h2><p>1.引入相关的jar包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;org.springframework&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;5.0.7.RELEASE&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.对Spring配置文件进行Spring的配置（数据库连接池写了两种一种是内置的数据库连接池一种是DBCP连接池）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 管理spring内置的DataSource --&gt;</span><br><span class="line">	&lt;!-- &lt;bean id=&quot;dataSource&quot; --&gt;</span><br><span class="line">	&lt;!-- class=&quot;org.springframework.jdbc.datasource.DriverManagerDataSource&quot;&gt; --&gt;</span><br><span class="line">	&lt;!-- set方法注入属性，和类中的成员属性无关，和set方法名称有关，比如有个属性叫username，但是set方法：setName --&gt;</span><br><span class="line">	&lt;!-- &lt;property name=&quot;driverClassName&quot; --&gt;</span><br><span class="line">	&lt;!-- value=&quot;com.mysql.jdbc.Driver&quot; /&gt; --&gt;</span><br><span class="line">	&lt;!-- &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql:///kkb&quot; /&gt; --&gt;</span><br><span class="line">	&lt;!-- &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt; --&gt;</span><br><span class="line">	&lt;!-- &lt;property name=&quot;password&quot; value=&quot;root&quot; /&gt; --&gt;</span><br><span class="line">	&lt;!-- &lt;/bean&gt; --&gt;</span><br><span class="line">	&lt;!-- 管理第三方的DataSource --&gt;</span><br><span class="line">&lt;bean id=&quot;dataSource&quot;</span><br><span class="line">	class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;</span><br><span class="line">&lt;!-- set方法注入属性，和类中的成员属性无关，和set方法名称有关，比如有个属性叫username，但是set方法：setName --&gt;</span><br><span class="line">	&lt;property name=&quot;driverClassName&quot;</span><br><span class="line">			value=&quot;com.mysql.jdbc.Driver&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;url&quot; value=&quot;jdbc:mysql://localhost:3306/jdbctest?useUnicode=true&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;password&quot; value=&quot;19980825&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- 管理JdbcTemplate --&gt;</span><br><span class="line">&lt;bean id=&quot;template&quot;</span><br><span class="line">    class=&quot;org.springframework.jdbc.core.JdbcTemplate&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;dataSource&quot; ref=&quot;dataSource&quot;&gt;&lt;/constructor-arg&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<p>3.用Spring整合Junit的方式进行测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">@RunWith(SpringJUnit4ClassRunner.class)</span><br><span class="line">@ContextConfiguration(locations = &quot;classpath:spring.xml&quot;)</span><br><span class="line">public class TestJdbcTemplate2 &#123;</span><br><span class="line">	@Autowired</span><br><span class="line">	private JdbcTemplate jdbcTemplate;</span><br><span class="line">	@Test</span><br><span class="line">	public void test() &#123;</span><br><span class="line">		// 完成数据的添加</span><br><span class="line">		//jdbcTemplate.update(&quot;insert into blog values(6,&quot;学习&quot;,&quot;张红&quot;,7,2019-1-3)&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	@Test</span><br><span class="line">	public void test2() &#123;</span><br><span class="line">		// 第一个参数：要执行的SQL语句</span><br><span class="line">		// 第二个参数：结果映射处理器（RowMapper）</span><br><span class="line">		// 第三个参数：SQL语句中的入参</span><br><span class="line">		List&lt;Account&gt; aList = jdbcTemplate.query(&quot;SELECT * FROM account&quot;, new MyBeanMapper(), null);</span><br><span class="line">		System.out.println(aList);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">/**</span><br><span class="line"> * 结果映射器</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">class MyBeanMapper implements RowMapper &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public Account mapRow(ResultSet rs, int rowNum) throws SQLException &#123;</span><br><span class="line">		Account account = new Account();</span><br><span class="line">		account.setId(rs.getInt(&quot;id&quot;));</span><br><span class="line">		account.setName(rs.getString(&quot;name&quot;));</span><br><span class="line">		account.setMoney(rs.getDouble(&quot;money&quot;));</span><br><span class="line">		return account;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="二-Spring应用之SpringJdbcDaoSupport"><a href="#二-Spring应用之SpringJdbcDaoSupport" class="headerlink" title="二.Spring应用之SpringJdbcDaoSupport"></a>二.Spring应用之SpringJdbcDaoSupport</h2><p>JdbcDaoSupport是JDBC数据访问对象的超类。它与特定的数据源相关联。Spring Inversion of Control （IOC）容器或BeanFactory负责获得相应数据源的配置详细信息，并将其与JdbcDaoSupport相关联。这个类最重要的功能就是使子类可以使用JdbcTemplate对象。<br>SpringJdbcDaoSupport就是里面内置了JdbcTemplate对象，我们只需要在dao层继承这个SpringJdbcDaoSupport 但是在配置文件中必须对JdbcTemple进行管理<br>1.引入相关的jar包<br>2.配置文件的相关配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 从底层往上层配置 --&gt;</span><br><span class="line">&lt;!-- 管理第三方的DataSource --&gt;</span><br><span class="line">&lt;bean id=&quot;dataSource&quot;</span><br><span class="line">	class=&quot;org.apache.commons.dbcp.BasicDataSource&quot;     destroy-method=&quot;close&quot;&gt;</span><br><span class="line">&lt;!-- set方法注入属性，和类中的成员属性无关，和set方法名称有关，比如有个属性叫username，但是set方法：setName --&gt;</span><br><span class="line">     &lt;property name=&quot;driverClassName&quot;</span><br><span class="line">          value=&quot;com.mysql.jdbc.Driver&quot; /&gt;</span><br><span class="line">     &lt;property name=&quot;url&quot; value=&quot;jdbc:mysql:///kkb&quot; /&gt;</span><br><span class="line">     &lt;property name=&quot;username&quot; value=&quot;root&quot; /&gt;</span><br><span class="line">     &lt;property name=&quot;password&quot; value=&quot;root&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- 管理JdbcTemplate --&gt;</span><br><span class="line">&lt;bean id=&quot;template&quot;</span><br><span class="line">     class=&quot;org.springframework.jdbc.core.JdbcTemplate&quot;&gt;</span><br><span class="line">	 &lt;constructor-arg name=&quot;dataSource&quot;       ref=&quot;dataSource&quot;&gt;&lt;/constructor-arg&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!--配置 AccountDao 和AccountService --&gt;</span><br><span class="line">&lt;context:component-scan base-package=&quot;com.kkb.spring.service&quot;&gt;&lt;/context:component-scan&gt;</span><br><span class="line">     &lt;bean id=&quot;accountDao&quot;            class=&quot;com.kkb.spring.dao.AccountDaoImpl&quot;&gt;</span><br><span class="line">     &lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<p>3.服务层（ServiceImpl）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//@Transactional：标记该类的所有方法都已经被事务进行管理了，至于管理属性，不设置的话，都采取默认值</span><br><span class="line">@Transactional</span><br><span class="line">@Service</span><br><span class="line">public class AccountServiceImpl implements AccountService &#123;</span><br><span class="line"></span><br><span class="line">	@Resource</span><br><span class="line">	private AccountDao accountDao;</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void transfer(String from, String to, double money) &#123;</span><br><span class="line">		// 先查询from账户的钱</span><br><span class="line">		double fromMoney = accountDao.queryMoney(from);</span><br><span class="line">		// 对from账户进行扣钱操作</span><br><span class="line">		accountDao.update(from, fromMoney - money);</span><br><span class="line"></span><br><span class="line">		//手动制造异常</span><br><span class="line">		System.out.println(1/0);</span><br><span class="line">		// 先查询from账户的钱</span><br><span class="line">		double toMoney = accountDao.queryMoney(to);</span><br><span class="line">		// 对to账户进行加钱操作</span><br><span class="line">		accountDao.update(to, toMoney + money);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>4.Dao层<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">@Repository</span><br><span class="line">public class AccountDaoImpl extends JdbcDaoSupport implements AccountDao &#123;</span><br><span class="line">	// JDBC操作</span><br><span class="line">	// Mybatis操作</span><br><span class="line">	// JdbcTemplate操作</span><br><span class="line">	// @Resource</span><br><span class="line">	// private JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void update(String name, double money) &#123;</span><br><span class="line">		Object[] args = &#123; money, name &#125;;</span><br><span class="line">		// jdbcTemplate.update(&quot;UPDATE account SET money = ? WHERE name = ? &quot;, args);</span><br><span class="line">		this.getJdbcTemplate().update(&quot;UPDATE account SET money = ? WHERE name = ? &quot;, args);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public double queryMoney(String name) &#123;</span><br><span class="line">		// Double money = jdbcTemplate.queryForObject(&quot;SELECT money FROM account WHERE</span><br><span class="line">		// name = ?&quot;, new DoubleMapper(),</span><br><span class="line">		// name);</span><br><span class="line"></span><br><span class="line">		Double money = this.getJdbcTemplate().queryForObject(&quot;SELECT money FROM account WHERE name = ?&quot;,</span><br><span class="line">				new DoubleMapper(), name);</span><br><span class="line">		return money;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="三-Spring应用之Spring事务管理"><a href="#三-Spring应用之Spring事务管理" class="headerlink" title="三.Spring应用之Spring事务管理"></a>三.Spring应用之Spring事务管理</h2><p>事务的特性（ACID）：<br>原子性：原子性是指事务包含的所有操作要么全部成功，要么全部失败回滚。<br>一致性：一致性是指事务必须使数据库从一个一致性状态变换到另一个一致性状态，也就是说一个事务执行之前和执行之后都必须处于一致性状态。拿转账来说，假设用户A和用户B两者的钱加起来一共是5000，那么不管A和B之间如何转账，转几次账，事务结束后两个用户的钱相加起来应该还得是5000，这就是事务的一致性。<br>隔离性：隔离性是当多个用户并发访问数据库时，比如操作同一张表时，数据库为每一个用户开启的事务，不能被其他事务的操作所干扰，多个并发事务之间要相互隔离。<br>持久性：持久性是指一个事务一旦被提交了，那么对数据库中的数据的改变就是永久性的，即便是在数据库系统遇到故障的情况下也不会丢失提交事务的操作。 </p>
+<p>事务并发问题（隔离性导致）：<br>在事务的并发操作中可能会出现一些问题：<br>脏读：一个事务读取到另一个事务未提交的数据。<br>不可重复读：一个事务因读取到另一个事务已提交的数据。导致对同一条记录读取两次以上的结果不一致。update操作<br>幻读：一个事务因读取到另一个事务已提交的数据。导致对同一张表读取两次以上的结果不一致。insert、delete操作 </p>
+<p>四种隔离级别：<br>现在来看看MySQL数据库为我们提供的四种隔离级别（由低到高）：<br>①Read uncommitted (读未提交)：最低级别，任何情况都无法保证。<br>②Read committed (读已提交)：可避免脏读的发生。<br>③Repeatable read (可重复读)：可避免脏读、不可重复读的发生。<br>④Serializable (串行化)：可避免脏读、不可重复读、幻读的发生。<br>大多数数据库的默认隔离级别是Read committed，比如Oracle、DB2等。<br>MySQL数据库的默认隔离级别是Repeatable read。  </p>
+<p>Spring并不直接管理事务，而是提供了多种事务管理器，他们将事务管理的职责委托给Hibernate或者JTA等持久化机制所提供的相关平台框架的事务来实现。 Spring事务管理器的接口是PlatformTransactionManager，通过这个接口，Spring为各个平台如JDBC、Hibernate等都提供了对应的事务管理器，但是具体的实现就是各个平台自己的事情了。<br><img src="http://img.027cgb.com/613363/010501.png" alt="avatar"></p>
+<ol>
+<li>PlatformTransactionManager接口     – 平台事务管理器.(真正管理事务的类)。该接口有具体的实现类，根据不同的持久层框架，需要选择不同的实现类！ </li>
+<li>TransactionDefinition接口          – 事务定义信息.(事务的隔离级别,传播行为,超时,只读)<br>这个接口里面有两个重要的参数  一个是事务隔离级别的常量   另外一个是事务的传播行为常量（主要为了解决services层方法之间相互调用的问题   保证不同的services层方法之间的调用由同一个事务进行管理）</li>
+<li>TransactionStatus接口               – 事务的状态（是否新事务、是否已提交、是否有保存点、是否回滚）  </li>
+</ol>
+<p>Spring的声明式事务管理： (基于AspectJ的xml方式)<br>1.配置文件的配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置平台事务管理器 --&gt;</span><br><span class="line">&lt;bean id=&quot;transactionManager&quot; class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- 事务通知 --&gt;</span><br><span class="line">&lt;!-- tx:advice：对应的处理器类就是TransactionInterceptor类（实现了MethodInterceptor） --&gt;</span><br><span class="line">&lt;!-- TransactionInterceptor类实现事务是通过transaction-manager属性指定的值进行事务管理 --&gt;</span><br><span class="line">&lt;tx:advice id=&quot;txAdvice&quot; transaction-manager=&quot;transactionManager&quot;&gt;</span><br><span class="line">&lt;!-- 设置事务管理信息 --&gt;</span><br><span class="line">	&lt;tx:attributes&gt;</span><br><span class="line">	&lt;!-- 增删改使用REQUIRED事务传播行为 --&gt;</span><br><span class="line">	&lt;!-- 查询使用read-only --&gt;</span><br><span class="line">	&lt;tx:method name=&quot;transfer*&quot; propagation=&quot;REQUIRED&quot; isolation=&quot;DEFAULT&quot;/&gt;</span><br><span class="line">    &lt;/tx:attributes&gt;</span><br><span class="line">&lt;/tx:advice&gt;</span><br><span class="line">&lt;!-- 基于AspectJ + XML方式实现声明式事务 --&gt;</span><br><span class="line">&lt;aop:config&gt;</span><br><span class="line">&lt;!-- aop:advisor标签使用的是传统spring aop开发方式实现的 --&gt;</span><br><span class="line">&lt;!-- spring已经实现了该增强功能，spring使用的是实现MethodInterceptor接口的方式实现的 --&gt;</span><br><span class="line">      &lt;aop:advisor advice-ref=&quot;txAdvice&quot; pointcut=&quot;execution(* *..*.*ServiceImpl.*(..))&quot;/&gt;</span><br><span class="line">&lt;/aop:config&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.Services层代码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">//@Transactional：标记该类的所有方法都已经被事务进行管理了，至于管理属性，不设置的话，都采取默认值</span><br><span class="line">@Transactional</span><br><span class="line">@Service</span><br><span class="line">public class AccountServiceImpl implements AccountService &#123;</span><br><span class="line"></span><br><span class="line">	@Resource</span><br><span class="line">	private AccountDao accountDao;</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void transfer(String from, String to, double money) &#123;</span><br><span class="line">		// 先查询from账户的钱</span><br><span class="line">		double fromMoney = accountDao.queryMoney(from);</span><br><span class="line">		// 对from账户进行扣钱操作</span><br><span class="line">		accountDao.update(from, fromMoney - money);</span><br><span class="line"></span><br><span class="line">		//手动制造异常</span><br><span class="line">		System.out.println(1/0);</span><br><span class="line">		// 先查询from账户的钱</span><br><span class="line">		double toMoney = accountDao.queryMoney(to);</span><br><span class="line">		// 对to账户进行加钱操作</span><br><span class="line">		accountDao.update(to, toMoney + money);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E9%87%91%E7%8E%9F%E5%B2%90%20-%20%E5%B2%81%E6%9C%88%E7%A5%9E%E5%81%B7%20(Demo).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E5%8C%85%E5%B8%88%E8%AF%AD%20-%20%E5%AE%89%E5%92%8C%E6%A1%A5%20(%E6%AD%A3%E7%BB%8F%E7%89%88%E6%9C%AC).mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E9%B9%BF%E5%85%88%E6%A3%AE%E4%B9%90%E9%98%9F%20-%20%E6%98%A5%E9%A3%8E%E5%8D%81%E9%87%8C.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="7" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E6%97%A0%E9%97%AE.mp3"></li>
+                    
+                        <li title="8" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="9" data-url="http://img.027cgb.com/613363/%E7%94%B0%E9%A6%A5%E7%94%84%20-%20%E7%88%B1%E4%BA%86%E5%BE%88%E4%B9%85%E7%9A%84%E6%9C%8B%E5%8F%8B.mp3"></li>
+                    
+                        <li title="10" data-url="http://img.027cgb.com/613363/%E6%9D%A8%E5%AE%97%E7%BA%AC%20-%20%E4%B8%80%E5%9C%BA%E6%81%8B%E7%88%B1.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
