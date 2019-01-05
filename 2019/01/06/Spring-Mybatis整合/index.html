@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="Spring组件学习一.Spring应用之SpringJdbc实现：1.引入相关的jar包12345&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;org.springframe,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head>
+</html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Spring-Mybatis整合</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Spring-Mybatis整合</h1>
+        <div class="stuff">
+            <span>一月 06, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h1 id="整合思路"><a href="#整合思路" class="headerlink" title="整合思路"></a>整合思路</h1><p>Spring在java项目中，主要的责任就是对javaBean进行IoC处理（spring容器）<br>三层结构：业务层、持久层<br>    持久层：DataSource、SqlSessionFactory（单例管理）、MapperScannerConfigurer<br>    业务层：Service实现类、事务管理<br>三层架构最主要的东西还是配置文件的编写：</p>
+<h2 id="和数据库交互的配置文件"><a href="#和数据库交互的配置文件" class="headerlink" title="和数据库交互的配置文件"></a>和数据库交互的配置文件</h2><p>applicationContext-dao.xml:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">	xmlns:context=&quot;http://www.springframework.org/schema/context&quot;</span><br><span class="line">	xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;</span><br><span class="line">	xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;</span><br><span class="line">	xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans</span><br><span class="line">        http://www.springframework.org/schema/beans/spring-beans.xsd</span><br><span class="line">        http://www.springframework.org/schema/context</span><br><span class="line">        http://www.springframework.org/schema/context/spring-context.xsd</span><br><span class="line">        http://www.springframework.org/schema/tx</span><br><span class="line">        http://www.springframework.org/schema/tx/spring-tx.xsd</span><br><span class="line">        http://www.springframework.org/schema/aop</span><br><span class="line">        http://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 读取java配置文件，替换占位符数据 --&gt;</span><br><span class="line">&lt;context:property-placeholder</span><br><span class="line">		location=&quot;classpath:db.properties&quot; /&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 配置数据源 --&gt;</span><br><span class="line">&lt;bean id=&quot;dataSource&quot;</span><br><span class="line">		class=&quot;org.apache.commons.dbcp.BasicDataSource&quot; destroy-method=&quot;close&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;driverClassName&quot;</span><br><span class="line">			value=&quot;$&#123;db.driverClassName&#125;&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;url&quot; value=&quot;$&#123;db.url&#125;&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;username&quot; value=&quot;$&#123;db.username&#125;&quot; /&gt;</span><br><span class="line">	&lt;property name=&quot;password&quot; value=&quot;$&#123;db.password&#125;&quot; /&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- 配置SqlSessionFactory --&gt;</span><br><span class="line">&lt;bean id=&quot;sqlSessionFactory&quot;class=&quot;org.mybatis.spring.SqlSessionFactoryBean&quot;&gt;</span><br><span class="line">&lt;!-- 注入dataSource --&gt;</span><br><span class="line">	&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;&gt;&lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- mybatis批量别名配置 --&gt;</span><br><span class="line">	&lt;property name=&quot;typeAliasesPackage&quot; value=&quot;com.kkb.ms.po&quot;&gt;&lt;/property&gt;</span><br><span class="line">	&lt;!-- 注入mybatis的全局配置文件路径 (该部分可以被省略掉) --&gt;</span><br><span class="line">	&lt;!-- &lt;property name=&quot;configLocation&quot; value=&quot;mybatis/SqlMapConfig.xml&quot;&gt;&lt;/property&gt; --&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">	&lt;!-- 相当于配置之前的AccountDao持久层bean --&gt;</span><br><span class="line">	&lt;!-- 配置Mapper代理对象方式一：MapperFactoryBean --&gt;</span><br><span class="line">	&lt;!-- 通过MapperFactoryBean生成的代理对象，一次只能针对一个接口进行生成 --&gt;</span><br><span class="line">	&lt;!-- 注意事项：mapper接口类和mapper映射文件同包同名 --&gt;</span><br><span class="line">	&lt;!-- &lt;bean id=&quot;accountMapper&quot; class=&quot;org.mybatis.spring.mapper.MapperFactoryBean&quot;&gt; </span><br><span class="line">		注入SqlSessionFactory </span><br><span class="line">		&lt;property name=&quot;sqlSessionFactory&quot; ref=&quot;sqlSessionFactory&quot;&gt;&lt;/property&gt; </span><br><span class="line">		注入目标接口类 </span><br><span class="line">		&lt;property name=&quot;mapperInterface&quot; value=&quot;com.kkb.ms.mapper.AccountMapper&quot;&gt;&lt;/property&gt; </span><br><span class="line">		&lt;/bean&gt; --&gt;</span><br><span class="line">	&lt;!-- 配置Mapper代理对象方式二：MapperScannerConfigurer --&gt;</span><br><span class="line">	&lt;!-- 批量代理对象的生成 --&gt;</span><br><span class="line">	&lt;bean class=&quot;org.mybatis.spring.mapper.MapperScannerConfigurer&quot;&gt;</span><br><span class="line">	&lt;!-- 指定需要生成代理的接口所在的包名 --&gt;</span><br><span class="line">	&lt;property name=&quot;basePackage&quot; value=&quot;com.kkb.ms.mapper&quot;&gt;&lt;/property&gt;</span><br><span class="line">	&lt;!-- 注意事项：不要配置SqlSessionFactory --&gt;</span><br><span class="line">	&lt;!-- &lt;property name=&quot;sqlSessionFactory&quot; ref=&quot;sqlSessionFactory&quot;&gt;&lt;/property&gt; --&gt;</span><br><span class="line">	&lt;property name=&quot;sqlSessionFactoryBeanName&quot;</span><br><span class="line">			value=&quot;sqlSessionFactory&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure></p>
+<p>applicationContext-services.xml:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE mapper</span><br><span class="line">    PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span><br><span class="line">    &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;</span><br><span class="line">&lt;mapper namespace=&quot;com.kkb.ms.mapper.AccountMapper&quot;&gt;</span><br><span class="line">	&lt;!-- 查询 --&gt;</span><br><span class="line">	&lt;select id=&quot;queryMoney&quot; parameterType=&quot;string&quot; resultType=&quot;double&quot;&gt;</span><br><span class="line">		SELECT money FROM testms WHERE name = #&#123;name&#125;</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;!-- 修改 --&gt;</span><br><span class="line">	&lt;update id=&quot;update&quot; parameterType=&quot;map&quot;&gt;</span><br><span class="line">		UPDATE testms SET money = #&#123;money&#125; WHERE name = #&#123;name&#125;</span><br><span class="line">	&lt;/update&gt;</span><br><span class="line">&lt;/mapper&gt;</span><br></pre></td></tr></table></figure></p>
+<p>applicationContext-services.xml: (事务处理)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">	xmlns:context=&quot;http://www.springframework.org/schema/context&quot;</span><br><span class="line">	xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;</span><br><span class="line">	xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot;</span><br><span class="line">	xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans</span><br><span class="line">        http://www.springframework.org/schema/beans/spring-beans.xsd</span><br><span class="line">        http://www.springframework.org/schema/context</span><br><span class="line">        http://www.springframework.org/schema/context/spring-context.xsd</span><br><span class="line">        http://www.springframework.org/schema/tx</span><br><span class="line">        http://www.springframework.org/schema/tx/spring-tx.xsd</span><br><span class="line">        http://www.springframework.org/schema/aop</span><br><span class="line">        http://www.springframework.org/schema/aop/spring-aop.xsd&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 配置平台事务管理器 --&gt;</span><br><span class="line">&lt;bean id=&quot;transactionManager&quot;</span><br><span class="line">		class=&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;&gt;</span><br><span class="line">	&lt;property name=&quot;dataSource&quot; ref=&quot;dataSource&quot;&gt;&lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br><span class="line">&lt;!-- 事务通知 --&gt;</span><br><span class="line">&lt;!-- tx:advice：对应的处理器类就是TransactionInterceptor类（实现了MethodInterceptor） --&gt;</span><br><span class="line">&lt;!-- TransactionInterceptor类实现事务是通过transaction-manager属性指定的值进行事务管理 --&gt;</span><br><span class="line">&lt;tx:advice id=&quot;txAdvice&quot;</span><br><span class="line">	transaction-manager=&quot;transactionManager&quot;&gt;</span><br><span class="line">	&lt;!-- 设置事务管理信息 --&gt;</span><br><span class="line">	&lt;tx:attributes&gt;</span><br><span class="line">	&lt;!-- 增删改使用REQUIRED事务传播行为 --&gt;</span><br><span class="line">	&lt;!-- 查询使用read-only --&gt;</span><br><span class="line">		&lt;tx:method name=&quot;transfer*&quot; propagation=&quot;REQUIRED&quot;</span><br><span class="line">				isolation=&quot;DEFAULT&quot; /&gt;</span><br><span class="line">		&lt;/tx:attributes&gt;</span><br><span class="line">&lt;/tx:advice&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 基于AspectJ + XML方式实现声明式事务 --&gt;</span><br><span class="line">&lt;aop:config&gt;</span><br><span class="line">	&lt;!-- aop:advisor标签使用的是传统spring aop开发方式实现的 --&gt;</span><br><span class="line">	&lt;!-- spring已经实现了该增强功能，spring使用的是实现MethodInterceptor接口的方式实现的 --&gt;</span><br><span class="line">	&lt;aop:advisor advice-ref=&quot;txAdvice&quot;</span><br><span class="line">		pointcut=&quot;execution(* *..*.*ServiceImpl.*(..))&quot; /&gt;</span><br><span class="line">&lt;/aop:config&gt;w</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Dao层：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">package com.kkb.ms.mapper;</span><br><span class="line"></span><br><span class="line">import org.apache.ibatis.annotations.Param;</span><br><span class="line"></span><br><span class="line">public interface AccountMapper &#123;</span><br><span class="line"></span><br><span class="line">	void update(@Param(&quot;name&quot;) String name, @Param(&quot;money&quot;)double money);</span><br><span class="line"></span><br><span class="line">	double queryMoney(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE mapper</span><br><span class="line">    PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span><br><span class="line">    &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;</span><br><span class="line">&lt;mapper namespace=&quot;com.kkb.ms.mapper.AccountMapper&quot;&gt;</span><br><span class="line">	&lt;!-- 查询 --&gt;</span><br><span class="line">	&lt;select id=&quot;queryMoney&quot; parameterType=&quot;string&quot; resultType=&quot;double&quot;&gt;</span><br><span class="line">		SELECT money FROM testms WHERE name = #&#123;name&#125;</span><br><span class="line">	&lt;/select&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;!-- 修改 --&gt;</span><br><span class="line">	&lt;update id=&quot;update&quot; parameterType=&quot;map&quot;&gt;</span><br><span class="line">		UPDATE testms SET money = #&#123;money&#125; WHERE name = #&#123;name&#125;</span><br><span class="line">	&lt;/update&gt;</span><br><span class="line">&lt;/mapper&gt;</span><br></pre></td></tr></table></figure>
+<p>Services层（实现转账的业务）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">package com.kkb.ms.service;</span><br><span class="line"></span><br><span class="line">public interface AccountService &#123;</span><br><span class="line"></span><br><span class="line">	void transfer(String from , String to,double money);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">package com.kkb.ms.test;</span><br><span class="line"></span><br><span class="line">import javax.annotation.Resource;</span><br><span class="line"></span><br><span class="line">import org.junit.Test;</span><br><span class="line">import org.junit.runner.RunWith;</span><br><span class="line">import org.springframework.test.context.ContextConfiguration;</span><br><span class="line">import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;</span><br><span class="line"></span><br><span class="line">import com.kkb.ms.service.AccountService;</span><br><span class="line"></span><br><span class="line">@RunWith(SpringJUnit4ClassRunner.class)</span><br><span class="line">//@ContextConfiguration(locations = &#123; &quot;classpath:spring/applicationContext-dao.xml&quot;, &quot;classpath:spring/applicationContext-service.xml&quot;,</span><br><span class="line">//		&quot;classpath:spring/applicationContext-tx.xml&quot; &#125;)</span><br><span class="line">@ContextConfiguration(locations =  &quot;classpath:spring/applicationContext-*.xml&quot; )</span><br><span class="line">public class AccountServiceTest &#123;</span><br><span class="line"></span><br><span class="line">	@Resource</span><br><span class="line">	private AccountService service;</span><br><span class="line">	</span><br><span class="line">	@Test</span><br><span class="line">	public void testTransfer() &#123;</span><br><span class="line">		service.transfer(&quot;老公&quot;, &quot;老婆&quot;, 100);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
