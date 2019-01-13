@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="设计模式—装饰模式意图：动态地给一个对象添加一些额外的职责。就增加功能来说，装饰器模式相比生成子类更为灵活。主要解决：一般的，我们为了扩展一个类经常使用继承方式实现，由于继承为类引入静态特征，并且随,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">SpringMVC学习（第二次）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">SpringMVC学习（第二次）</h1>
+        <div class="stuff">
+            <span>一月 13, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="设计模式—装饰模式"><a href="#设计模式—装饰模式" class="headerlink" title="设计模式—装饰模式"></a>设计模式—装饰模式</h2><p>意图：动态地给一个对象添加一些额外的职责。就增加功能来说，装饰器模式相比生成子类更为灵活。<br>主要解决：一般的，我们为了扩展一个类经常使用继承方式实现，由于继承为类引入静态特征，并且随着扩展功能的增多，子类会很膨胀。<br>何时使用：在不想增加很多子类的情况下扩展类。<br>如何解决：将具体功能职责划分，同时继承装饰者模式。<br>优点：装饰类和被装饰类可以独立发展，不会相互耦合，装饰模式是继承的一个替代模式，装饰模式可以动态扩展一个实现类的功能。<br>缺点：多层装饰比较复杂。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 被装饰类</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class Iphone6 implements Iphone &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void call() &#123;</span><br><span class="line">		System.out.println(&quot;使用iphone6打电话，性能刚刚滴&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 装饰类（增强功能）</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class IphoneDecorate implements Iphone&#123;</span><br><span class="line"></span><br><span class="line">	//被装饰的目标类</span><br><span class="line">	private Iphone iphone;</span><br><span class="line">	</span><br><span class="line">	//通过构造参数将被装饰的类，传入过来</span><br><span class="line">	public IphoneDecorate(Iphone iphone) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.iphone = iphone;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void call() &#123;</span><br><span class="line">		System.out.println(&quot;人猿泰山music。。。。。。&quot;);</span><br><span class="line">		iphone.call();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 装饰类（增强功能）</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class IphoneDecorate implements Iphone&#123;</span><br><span class="line"></span><br><span class="line">	//被装饰的目标类</span><br><span class="line">	private Iphone iphone;</span><br><span class="line">	</span><br><span class="line">	//通过构造参数将被装饰的类，传入过来</span><br><span class="line">	public IphoneDecorate(Iphone iphone) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.iphone = iphone;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void call() &#123;</span><br><span class="line">		System.out.println(&quot;对对象的增强工作&quot;);</span><br><span class="line">		iphone.call();</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="设计模式—适配器模式"><a href="#设计模式—适配器模式" class="headerlink" title="设计模式—适配器模式"></a>设计模式—适配器模式</h2><p>意图：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。<br>主要解决：主要解决在软件系统中，常常要将一些”现存的对象”放到新的环境中，而新环境要求的接口是现对象不能满足的。<br>何时使用： 1、系统需要使用现有的类，而此类的接口不符合系统的需要。 2、想要建立一个可以重复使用的类，用于与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作，这些源类不一定有一致的接口。 3、通过接口转换，将一个类插入另一个类系中。（比如老虎和飞禽，现在多了一个飞虎，在不增加实体的需求下，增加一个适配器，在里面包容一个虎对象，实现飞的接口。）<br>如何解决：继承或依赖（推荐）。<br>优点： 1、可以让任何两个没有关联的类一起运行。 2、提高了类的复用。 3、增加了类的透明度。 4、灵活性好。<br>缺点： 1、过多地使用适配器，会让系统非常零乱，不易整体进行把握。比如，明明看到调用的是 A 接口，其实内部被适配成了 B 接口的实现，一个系统如果太多出现这种情况，无异于一场灾难。因此如果不是很有必要，可以不使用适配器，而是直接对系统进行重构。 2.由于 JAVA 至多继承一个类，所以至多只能适配一个适配者类，而且目标类必须是抽象类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 德国标准的插排</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public interface DBSocket &#123;</span><br><span class="line"></span><br><span class="line">	void charge();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 德国插排</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class DBSocketImpl implements DBSocket &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void charge() &#123;</span><br><span class="line">		System.out.println(&quot;使用两眼插孔充电&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>/**</p>
+<ul>
+<li>中国插排</li>
+<li>@author think<br><em>
+</em>/<br>public interface GBSocket {<br> void charge();<br>}</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class GBSocketImpl implements GBSocket &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void charge() &#123;</span><br><span class="line">		System.out.println(&quot;使用三眼插孔充电&quot;);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>package com.kkb.ssm.design_pattern.adapter;</p>
+<p>/**</p>
+<ul>
+<li>这是国际标准</li>
+<li><p>@author think<br><em>
+</em>/<br>public interface GJBZSocket {</p>
+<p> void charge();<br>}</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/***</span><br><span class="line"> * 适配器(将不同类型的GBSocket和DBSocket都适配成GJBZSocket)</span><br><span class="line"> * </span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class SockerAdapter implements GJBZSocket &#123;</span><br><span class="line"></span><br><span class="line">	private Object socket;</span><br><span class="line"></span><br><span class="line">	public SockerAdapter(Object socket) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.socket = socket;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void charge() &#123;</span><br><span class="line">		if (socket instanceof GBSocket) &#123;</span><br><span class="line">			((GBSocket)socket).charge();</span><br><span class="line">		&#125;else if (socket instanceof DBSocket) &#123;</span><br><span class="line">			((DBSocket)socket).charge();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="异常处理器"><a href="#异常处理器" class="headerlink" title="异常处理器"></a>异常处理器</h2><p>一般来说当代码出现异常之后，类似404之类的页面肯定不能出现在页面上，这个时候就需要定义一个全局的自定义异常处理器，大部分公司应该都有自己的自定义异常处理类，应该都是封装好的代码，这里只是进行了解学习使用<br>1.自定义异常类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">/***</span><br><span class="line"> * 自定义编译时异常</span><br><span class="line"> * @author think</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class CustomExcetion extends Exception &#123;</span><br><span class="line"></span><br><span class="line">	private String msg;</span><br><span class="line"></span><br><span class="line">	public CustomExcetion(String msg) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.msg = msg;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getMsg() &#123;</span><br><span class="line">		return msg;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void setMsg(String msg) &#123;</span><br><span class="line">		this.msg = msg;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.自定义异常处理器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class CustomExceptionResolver implements HandlerExceptionResolver &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,</span><br><span class="line">			Exception ex) &#123;</span><br><span class="line">		</span><br><span class="line">		String message = &quot;&quot;;</span><br><span class="line">		</span><br><span class="line">		//异常处理逻辑</span><br><span class="line">		if (ex instanceof CustomExcetion) &#123;</span><br><span class="line">			message = ((CustomExcetion)ex).getMsg();</span><br><span class="line">		&#125;else &#123;</span><br><span class="line">			message = &quot;未知错误&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		ModelAndView mv = new ModelAndView();</span><br><span class="line">		mv.setViewName(&quot;error&quot;);</span><br><span class="line">		mv.addObject(&quot;message&quot;, message);</span><br><span class="line">		</span><br><span class="line">		return mv;</span><br><span class="line">	&#125;</span><br><span class="line">//在jsp页面接受这个穿过来的message就可以了</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>3.SpringMVC的异常处理器的配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置异常处理器 --&gt;</span><br><span class="line">	&lt;bean class=&quot;com.kkb.ssm.exception.resolver.CustomExceptionResolver&quot;&gt;&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="图片的上传"><a href="#图片的上传" class="headerlink" title="图片的上传"></a>图片的上传</h2><p>SpringMVC文件上传的实现，是由commons-fileupload这个jar包实现的。在表现层需要MultipartFile 这个类，由于这个类是mvc的一个接口实现类，所以图片的上传一般都在表现层，不在服务层。具体原因可能是因为减少服务层对表现层的依赖<br>1.文件上传需要指定enctype=”multipart/form-data”（jsp页面）<br>2.配置Multipart解析器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置多部件解析器 --&gt;</span><br><span class="line">	&lt;bean id=&quot;multipartResolver&quot; class=&quot;org.springframework.web.multipart.commons.CommonsMultipartResolver&quot;&gt;</span><br><span class="line">		&lt;!-- 限制上传文件的大小 单位是byte--&gt;</span><br><span class="line">		&lt;property name=&quot;maxUploadSize&quot; value=&quot;5000000&quot;&gt;&lt;/property&gt;</span><br><span class="line">	&lt;/bean&gt;</span><br><span class="line">```    </span><br><span class="line">3.Controller代码</span><br></pre></td></tr></table></figure></p>
+<p>@RequestMapping(“updateItem”)<br>    @ResponseBody<br>    public Item updateItem(Integer id, String name, Float price, Item item, MultipartFile pictureFile) throws Exception{<br>        if (pictureFile != null) {<br>            //获取上传文件名称<br>            String originalFilename = pictureFile.getOriginalFilename();<br>            if (originalFilename != null &amp;&amp; !””.contentEquals(originalFilename)) {<br>                //获取扩展名<br>                String extName = originalFilename.substring(originalFilename.lastIndexOf(“.”));<br>                //重新生成一个文件名称<br>                String newFileName = UUID.randomUUID().toString()+extName;<br>                //指定存储文件的根目录<br>                String baseDir=”E:\07-upload\temp\“;<br>                File dirFile=new File(baseDir);<br>                if (!dirFile.exists()) {<br>                    dirFile.mkdirs();<br>                }<br>                //将上传的文件复制到新的文件(完整路径)中<br>                pictureFile.transferTo(new File(baseDir + newFileName));</p>
+<pre><code>            //保存文件路径
+            item.setPic(newFileName);
+        }
+    }
+
+    //商品修改
+    service.updateItem(item);
+
+    return item;
+}
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3.jsp页面</span><br></pre></td></tr></table></figure>
+<p><tr><br>    <td>商品图片</td><br>        <td>&lt;c:if test=”${item.pic !=null}”&gt;<br>        <img src="http://localhost/pic/${item.pic}" width="100" height="100"><br><br>           &lt;/c:if&gt; <input type="file" name="pictureFile"></td><br>    </tr><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">## Mock测试  </span><br><span class="line">MockMVC是基于RESTful（下篇文章写）风格的SpringMVC的测试，我们可以测试完整的Spring MVC流程，即从URL请求到控制器处理，再到视图渲染都可以测试  </span><br><span class="line">MockMVCBuilder  </span><br><span class="line">	* MockMvcBuilder是用来构造MockMvc的构造器  </span><br><span class="line">	*其主要有两个实现：StandaloneMockMvcBuilder和DefaultMockMvcBuilder，分别对应之前的两种测试方式。  </span><br><span class="line">	* 对于我们来说直接使用静态工厂MockMvcBuilders创建即可</span><br><span class="line"></span><br><span class="line">MockMVCBuilders  </span><br><span class="line">	* 负责创建MockMVCBuilder对象  </span><br><span class="line">	* 有两种创建方式  </span><br><span class="line">		* standaloneSetup(Object... controllers): </span><br><span class="line">			* 通过参数指定一组控制器，这样就不需要从上下文获取了。  </span><br><span class="line">		* webAppContextSetup(WebApplicationContext wac)</span><br><span class="line">			* 指定WebApplicationContext，将会从该上下文获取相应的控制器并得到相应的MockMvc  </span><br><span class="line"></span><br><span class="line">MockMvc  </span><br><span class="line">	* 对于服务器端的Spring MVC测试支持主入口点。  </span><br><span class="line">	* 通过MockMVCBuilder构造  </span><br><span class="line">	* MockMVCBuilder由MockMVCBuilders建造者的静态方法去建造。  </span><br><span class="line">	* 核心方法：perform(RequestBuilder rb)--- 执行一个RequestBuilder请求，会自动执行SpringMVC的流程并映射到相应的控制器执行处理，该方法的返回值是一ResultActions；  </span><br><span class="line"></span><br><span class="line">ResultActions</span><br><span class="line">	* andExpect：添加ResultMatcher验证规则，验证控制器执行完成后结果是否正确；  </span><br><span class="line">	* andDo：添加ResultHandler结果处理器，比如调试时打印结果到控制台；  </span><br><span class="line">	* andReturn：最后返回相应的MvcResult；然后进行自定义验证/进行下一步的异步处理；  </span><br><span class="line"></span><br><span class="line">MockMvcRequestBuilders  </span><br><span class="line">	* 用来构建请求的  </span><br><span class="line"> 	*其主要有两个子类MockHttpServletRequestBuilder和MockMultipartHttpServletRequestBuilder（如文件上传使用），即用来Mock客户端请求需要的所有数据。  </span><br><span class="line">	</span><br><span class="line">MockMvcResultMatchers  </span><br><span class="line">	* 用来匹配执行完请求后的结果验证  </span><br><span class="line">	* 如果匹配失败将抛出相应的异常  </span><br><span class="line">	* 包含了很多验证API方法  </span><br><span class="line"></span><br><span class="line">MockMvcResultHandlers  </span><br><span class="line">	* 结果处理器，表示要对结果做点什么事情  </span><br><span class="line">	* 比如此处使用MockMvcResultHandlers.print()输出整个响应结果信息。  </span><br><span class="line">MvcResult  </span><br><span class="line">	* 单元测试执行结果，可以针对执行结果进行自定义验证逻辑。</span><br><span class="line">    </span><br><span class="line">测试代码举例;</span><br></pre></td></tr></table></figure></p>
+<p>//@WebAppConfiguration：可以在单元测试的时候，不用启动Servlet容器，就可以获取一个Web应用上下文</p>
+<p>@RunWith(SpringJUnit4ClassRunner.class)<br>@ContextConfiguration(locations = “classpath:spring/*.xml”)<br>@WebAppConfiguration<br>public class TestMockMVC {</p>
+<pre><code>@Autowired
+private WebApplicationContext wac;
+
+private MockMvc mockMvc;
+
+@Before
+public void setup() {
+    // 初始化一个MockMVC对象的方式有两种：单独设置、web应用上下文设置
+    // 建议使用Web应用上下文设置
+    mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+}
+
+@Test
+public void test() throws Exception {
+    // 通过perform去发送一个HTTP请求
+    // andExpect：通过该方法，判断请求执行是否成功
+    // andDo :对请求之后的结果进行输出
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(&quot;/item/showEdit&quot;).param(&quot;id&quot;, &quot;1&quot;))
+            .andExpect(MockMvcResultMatchers.view().name(&quot;item/item-edit&quot;))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andDo(MockMvcResultHandlers.print())
+            .andReturn();
+
+    System.out.println(&quot;================================&quot;);
+    System.out.println(result.getHandler());
+}
+
+@Test
+public void test2() throws Exception {
+    // 通过perform去发送一个HTTP请求
+    // andExpect：通过该方法，判断请求执行是否成功
+    // andDo :对请求之后的结果进行输出
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(&quot;/item/findItem&quot;).param(&quot;id&quot;, &quot;1&quot;))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.id&quot;).value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.name&quot;).value(&quot;台式机123&quot;))
+            .andDo(MockMvcResultHandlers.print())
+            .andReturn();
+
+    System.out.println(&quot;================================&quot;);
+    System.out.println(result.getHandler());
+}
+</code></pre><p>}</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">## SSM框架乱码解决  </span><br><span class="line">1.请求乱码解决之get乱码问题  </span><br><span class="line">GET请求参数是通过请求行中的URI发送给Web服务器（Tomcat）的。</span><br><span class="line">* Tomcat服务器会对URI进行编码操作（此时使用的是Tomcat设置的字符集，默认是iso8859-1）</span><br><span class="line">* 到了我们的应用程序中的请求参数，已经是被Tomcat使用ISO8859-1字符集进行编码之后的了。   </span><br><span class="line"></span><br><span class="line">解决方式:  </span><br><span class="line">(1)指定UTF-8编码，如下：</span><br></pre></td></tr></table></figure>
+<p><connector uriencoding="utf-8" connectiontimeout="20000" port="8080" protocol="HTTP/1.1" redirectport="8443"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(2)对请求参数进行重新解码</span><br></pre></td></tr></table></figure></connector></p>
+<p>String username = new<br>String(request.getParamter(“userName”).getBytes(“ISO8859-1”),”utf-8”)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(3)过滤器+请求装饰器统一解决请求乱码  </span><br><span class="line">MyRequestWrapper  </span><br><span class="line">MyCharacterEncodingFilter  </span><br><span class="line">详见：https://blog.csdn.net/empiresteven/article/details/49757667  </span><br><span class="line">2.请求乱码解决之post乱码问题</span><br></pre></td></tr></table></figure></p>
+<!-- POST乱码过滤器 -->
+<pre><code>&lt;filter&gt;
+    &lt;filter-name&gt;CharacterEncodingFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;org.springframework.web.filter.CharacterEncodingFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;encoding&lt;/param-name&gt;
+        &lt;param-value&gt;utf-8&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;CharacterEncodingFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;
+</code></pre><p><code>`</code><br>3响应乱码解决<br>使用@RequestMapping注解中的produces属性，指定响应体的编码格式</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
