@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="RESTful支持想要理解RESTful，必须先要理解http，RESTful是一种软件架构风格、设计风格，而不是标准，只是提供了一组设计原则和约束条件。它主要用于客户端和服务器交互类的软件。基于这,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">SpringMVC学习（第三次）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">SpringMVC学习（第三次）</h1>
+        <div class="stuff">
+            <span>一月 17, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="RESTful支持"><a href="#RESTful支持" class="headerlink" title="RESTful支持"></a>RESTful支持</h2><p>想要理解RESTful，必须先要理解http，RESTful是一种软件架构风格、设计风格，而不是标准，只是提供了一组设计原则和约束条件。它主要用于客户端和服务器交互类的软件。基于这个风格设计的软件可以更简洁，更有层次，更易于实现缓存等机制。其核心价值在于如何设计出符合 REST 风格的网络接口。  </p>
+<p>什么是RESTful?<br>REST 指的是一组架构约束条件和原则。满足这些约束条件和原则的应用程序或设计就是 RESTful。</p>
+<p>RESTful 的特性：  </p>
+<ul>
+<li>资源（Resources）：网络上的一个实体，或者说是网络上的一个具体信息。它可以是一段文本、一张图片、一首歌曲、一种服务，总之就是一个具体的存在。可以用一个 URI（统一资源定位符）指向它，每种资源对应一个特定的 URI 。要获取这个资源，访问它的 URI 就可以，因此 URI 即为每一个资源的独一无二的识别符。  </li>
+<li>表现层（Representation）：把资源具体呈现出来的形式，叫做它的表现层 （Representation）。比如，文本可以用 txt 格式表现，也可以用 HTML 格式、XML 格式、JSON 格式表现，甚至可以采用二进制格式。</li>
+<li>状态转化（State Transfer）：每发出一个请求，就代表了客户端和服务器的一次交互过程。HTTP协议，是一个无状态协议，即所有的状态都保存在服务器端。因此，如果客户端想要操作服务器， 必须通过某种手段，让服务器端发生“状态转化”（State Transfer）。而这种转化是建立在表现层之上的，所以就是 “ 表现层状态转化” 。具体说， 就是 HTTP 协议里面，四个表示操作方式的动词：GET 、POST 、PUT 、DELETE 。它们分别对应四种基本操作：GET 用来获取资源，POST 用来新建资源，PUT 用来更新资源，DELETE 用来删除资源。</li>
+</ul>
+<p>RESTful 的示例：<br>/account/1    HTTP GET ：    得到 id = 1 的 account<br>/account/1    HTTP DELETE： 删除 id = 1 的 account<br>/account/1    HTTP PUT：    更新 id = 1 的 account  </p>
+<p>SpringMVC对RESTful的支持<br>URL-PATTERN ：设置为/，方便拦截RESTful 请求。<br>@PathVariable：可以解析出来URL中的模板变量（{id}）</p>
+<p>RESTful的CRUD:<br>@RequestMapping：通过设置method属性的CRUD，可以将同一个URL映射到不同的HandlerMethod方法上<br>@GetMapping、@PostMapping、@PutMapping、@DeleteMapping注解同@RequestMapping注解的method属性设置。  </p>
+<p>RESTful的资源表述  </p>
+<ul>
+<li>RESTful服务中一个重要的特性就是一种资源可以有多种表现形式，在SpringMVC中可以使用ContentNegotiatingManager这个内容协商管理器来实现这种方式。  </li>
+<li><p>内容协商的方式有三种：</p>
+<ul>
+<li>扩展名,比如.json表示我要JSON格式数据、.xml表示我要XML格式数据</li>
+<li>请求参数：默认是”format”</li>
+<li>请求头设置Accept参数，比如设置Accept为application/json表示要JSON格式数据</li>
+</ul>
+</li>
+<li><p>不过现在RESTful响应的数据一般都是JSON格式，所以一般也不使用内容协商管理器，直接使用@ResponseBody注解将数据按照JSON格式返回    </p>
+</li>
+</ul>
+<p>静态资源访问<a href="mvc:resources" target="_blank" rel="noopener">mvc:resources</a><br>因为&lt; url-pattern &gt;/&lt; /url-pattern &gt;在Tomcat服务器是默认的servlet；通过查看Tomcat web.xml可得知，它除了能够处理静态资源还能够处理HTTP缓存请求，媒体（音频/视频）数据流和文件下载简历。所以如果我们的项目中配置了”/“，会覆盖掉tomcat中的default servlet。所以当springMVC的前端控制器配置为“/”时，需要在主配置文件中配置放行静态资源。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 当DispatcherServlet配置为/来拦截请求的时候，需要配置静态资源的访问映射 --&gt;</span><br><span class="line">&lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot;/&gt;</span><br><span class="line">&lt;mvc:resources location=&quot;/css/&quot; mapping=&quot;/css/**&quot;/&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h2><ul>
+<li>SpringMVC拦截器（Interceptor）实现对每一个请求处理前后进行相关的业务处理，类似与servlet中的Filter。   </li>
+<li>SpringMVC 中的Interceptor 拦截请求是通过HandlerInterceptor来实现的。</li>
+<li>在SpringMVC中定义一个Interceptor非常简单，主要是实现Spring的HandlerInterceptor接口  <h3 id="定义拦截器"><a href="#定义拦截器" class="headerlink" title="定义拦截器"></a>定义拦截器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">public class MyHandlerIntercepter1 implements HandlerInterceptor&#123;</span><br><span class="line"></span><br><span class="line">	//Handler执行前调用</span><br><span class="line">	//应用场景：登录认证、身份授权</span><br><span class="line">	//返回值为true则是放行，为false是不放行</span><br><span class="line">	@Override</span><br><span class="line">	public boolean preHandle(HttpServletRequest request,</span><br><span class="line">			HttpServletResponse response, Object handler) throws Exception &#123;</span><br><span class="line">		</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//进入Handler开始执行，并且在返回ModelAndView之前调用</span><br><span class="line">	//应用场景：对ModelAndView对象操作，可以把公共模型数据传到前台，可以统一指定视图</span><br><span class="line">	@Override</span><br><span class="line">	public void postHandle(HttpServletRequest request,</span><br><span class="line">			HttpServletResponse response, Object handler,</span><br><span class="line">			ModelAndView modelAndView) throws Exception &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	//执行完Handler之后调用</span><br><span class="line">	//应用场景：统一异常处理、统一日志处理</span><br><span class="line">	@Override</span><br><span class="line">	public void afterCompletion(HttpServletRequest request,</span><br><span class="line">			HttpServletResponse response, Object handler, Exception ex)</span><br><span class="line">			throws Exception &#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="配置拦截器"><a href="#配置拦截器" class="headerlink" title="配置拦截器"></a>配置拦截器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置全局mapping的拦截器 --&gt;</span><br><span class="line">&lt;mvc:interceptors&gt;</span><br><span class="line">     &lt;!-- 公共拦截器可以拦截所有请求，而且可以有多个 --&gt;</span><br><span class="line">     &lt;bean class=&quot;com.kkb.ssm.interceptor.MyHandlerInterceptor1&quot; /&gt;</span><br><span class="line">    &lt;bean class=&quot;com.kkb.ssm.interceptor.MyHandlerInterceptor2&quot; /&gt;</span><br><span class="line">	&lt;!-- 如果有多个拦截器，则按照顺序进行配置 --&gt;</span><br><span class="line">	&lt;mvc:interceptor&gt;</span><br><span class="line">		&lt;!-- /**表示所有URL和子URL路径 --&gt;</span><br><span class="line">		&lt;mvc:mapping path=&quot;/test/**&quot; /&gt;</span><br><span class="line">         &lt;!-- 特定请求的拦截器只能有一个 --&gt;</span><br><span class="line">		&lt;bean class=&quot;com.kkb.ssm.interceptor.MyHandlerInterceptor3&quot; /&gt;</span><br><span class="line">	&lt;/mvc:interceptor&gt;</span><br><span class="line">&lt;/mvc:interceptors&gt;</span><br></pre></td></tr></table></figure>
+<p>实现登录验证的过程：<br>拦截器对访问的请求URL进行拦截校验<br>1、如果请求的URL是公开地址（无需登录就可以访问的URL,具体指的就是保护login字段的请求URL），采取放行。<br>2、如果用户session存在，则放行。<br>3、如果用户session中不存在，则跳转到登录页面。<br>Controller类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">@Controller</span><br><span class="line">public class LoginController &#123;</span><br><span class="line"></span><br><span class="line">	//显示登录页面</span><br><span class="line">	@RequestMapping(&quot;/loginPage&quot;)</span><br><span class="line">	public String loginPage()&#123;</span><br><span class="line">		return &quot;login&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	// 登录</span><br><span class="line">	@RequestMapping(&quot;/login&quot;)</span><br><span class="line">	public String login(HttpSession session, String username, String password) &#123;</span><br><span class="line">		// Service进行用户身份验证</span><br><span class="line"></span><br><span class="line">		// 把用户信息保存到session中</span><br><span class="line">		session.setAttribute(&quot;username&quot;, username);</span><br><span class="line"></span><br><span class="line">		// 重定向到商品列表页面</span><br><span class="line">		return &quot;redirect:/item/queryItem&quot;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// 退出</span><br><span class="line">	@RequestMapping(&quot;/logout&quot;)</span><br><span class="line">	public String logout(HttpSession session) &#123;</span><br><span class="line">		</span><br><span class="line">		//清空session</span><br><span class="line">		session.invalidate();</span><br><span class="line">		// 重定向到登录页面</span><br><span class="line">		return &quot;redirect:/loginPage&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>HandlerInterceptor类:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public class LoginInterceptor implements HandlerInterceptor &#123;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public boolean preHandle(HttpServletRequest request,</span><br><span class="line">			HttpServletResponse response, Object handler) throws Exception &#123;</span><br><span class="line">		</span><br><span class="line">		//获取请求的URI</span><br><span class="line">		String requestURI = request.getRequestURI();</span><br><span class="line">				</span><br><span class="line">		System.out.println(requestURI);		</span><br><span class="line">//		1、	如果请求的URL是公开地址（无需登录就可以访问的URL），采取放行。</span><br><span class="line">		if(requestURI.indexOf(&quot;login&quot;)&gt;-1) return true;</span><br><span class="line">//		2、	如果用户session存在，则放行。</span><br><span class="line">		String username = (String) request.getSession().getAttribute(&quot;username&quot;);</span><br><span class="line">		if(username !=null &amp;&amp; !username.equals(&quot;&quot;)) return true;</span><br><span class="line">//		3、	如果用户session中不存在，则跳转到登录页面。</span><br><span class="line">		response.sendRedirect(&quot;/ssm/loginPage&quot;);</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void postHandle(HttpServletRequest request,</span><br><span class="line">			HttpServletResponse response, Object handler,</span><br><span class="line">			ModelAndView modelAndView) throws Exception &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void afterCompletion(HttpServletRequest request,</span><br><span class="line">			HttpServletResponse response, Object handler, Exception ex)</span><br><span class="line">			throws Exception &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>HandlerInterceptor配置:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 配置全局mapping的拦截器 --&gt;</span><br><span class="line">&lt;mvc:interceptors&gt;</span><br><span class="line">	&lt;!-- 如果有多个拦截器，则按照顺序进行配置 --&gt;</span><br><span class="line">	&lt;mvc:interceptor&gt;</span><br><span class="line">		&lt;!-- /**表示所有URL和子URL路径 --&gt;</span><br><span class="line">		&lt;mvc:mapping path=&quot;/**&quot; /&gt;</span><br><span class="line">		&lt;bean class=&quot;com.kkb.ssm.interceptor.LoginInterceptor&quot; /&gt;</span><br><span class="line">	&lt;/mvc:interceptor&gt;</span><br><span class="line">	&lt;!-- 如果有多个拦截器，则按照顺序进行配置 --&gt;</span><br><span class="line">	&lt;mvc:interceptor&gt;</span><br><span class="line">		&lt;!-- /**表示所有URL和子URL路径 --&gt;</span><br><span class="line">		&lt;mvc:mapping path=&quot;/**&quot; /&gt;</span><br><span class="line">		&lt;bean class=&quot; com.kkb.ssm.interceptor.MyHandlerInterceptor&quot; /&gt;</span><br><span class="line">	&lt;/mvc:interceptor&gt;</span><br><span class="line">&lt;/mvc:interceptors&gt;</span><br></pre></td></tr></table></figure></p>
+<p>在这里简单对比一下过滤器和拦截器的区别：</p>
+<ul>
+<li>功能相同：拦截器和 Filter都能实现相应的功能，谁也不比谁强。</li>
+<li>容器不同：拦截器构建在 Spring MVC 体系中；Filter 构建在 Servlet 容器之上。</li>
+<li>使用便利性不同：拦截器提供了三个方法，分别在不同的时机执行；过滤器仅提供一个方法，当然也能实现拦截器的执行时机的效果，就是麻烦一些。<h2 id="跨域处理"><a href="#跨域处理" class="headerlink" title="跨域处理"></a>跨域处理</h2>由于浏览器对于Javascript的同源策略的限制，导致A网站不能通过JS（主要就是Ajax请求）去访问B网站的数据，于是跨域问题就出现了。跨域指的是域名、端口、协议的组合不同就是跨域。<br>解决跨域的方式有多种，比如基于JavaScript的解决方式、基于Jquery的JSONP方式、以及基于CORS的方式。<br>JSONP和CORS的区别之一：JSONP只能解决get方式提交、CORS不仅支持GET方式，同时也支持POST提交方式。  </li>
+</ul>
+<p>CORS原理：只需要向响应头header中注入Access-Control-Allow-Origin，这样浏览器检测到header中的Access-Control-Allow-Origin，则就可以跨域操作了。  </p>
+<p>简单请求：<br>对于简单请求，浏览器直接发出CORS请求。具体来说，就是在头信息之中，增加一个Origin字段。<br>非简单请求：<br>非简单请求是那种对服务器有特殊要求的请求，比如请求方法是PUT或DELETE，或者Content-Type字段的类型是application/json。<br>非简单请求的CORS请求，会在正式通信之前，增加一次HTTP查询请求，称为”预检”请求（preflight）。浏览器先询问服务器，当前网页所在的域名是否在服务器的许可名单之中，以及可以使用哪些HTTP动词和头信息字段。只有得到肯定答复，浏览器才会发出正式的XMLHttpRequest请求，否则就报错。  </p>
+<p>CORS实现是使用springmvc的拦截器实现的<br>跨域不提交Cookie<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class AllowOriginInterceptor implements HandlerInterceptor &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception &#123;</span><br><span class="line">       // 有跨域行为时参考网址 http://namezhou.iteye.com/blog/2384434</span><br><span class="line">       if (request.getHeader(&quot;Origin&quot;) != null) &#123;</span><br><span class="line">           response.setContentType(&quot;text/html;charset=UTF-8&quot;);</span><br><span class="line">           // 允许哪一个URL</span><br><span class="line">          response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;);</span><br><span class="line">           // 允许那种请求方法</span><br><span class="line">          response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;POST, GET, OPTIONS, DELETE&quot;);</span><br><span class="line">          response.setHeader(&quot;XDomainRequestAllowed&quot;, &quot;1&quot;);</span><br><span class="line">           System.out.println(&quot;正在跨域&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">       return true;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>再加上拦截器的配置<br>如果有多个拦截器，一定要把处理跨域请求的拦截器放到首位。</p>
+<p>跨域提交Cookie<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class AllowOriginInterceptor implements HandlerInterceptor &#123;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception &#123;</span><br><span class="line">       // 有跨域行为时参考网址 http://namezhou.iteye.com/blog/2384434</span><br><span class="line">       if (request.getHeader(&quot;Origin&quot;) != null) &#123;</span><br><span class="line">           response.setContentType(&quot;text/html;charset=UTF-8&quot;);</span><br><span class="line">           // 允许哪一个URL 访问 request.getHeader(&quot;Origin&quot;) 根据请求来的url动态允许</span><br><span class="line">          response.setHeader(&quot;Access-Control-Allow-Origin&quot;, request.getHeader(&quot;Origin&quot;));</span><br><span class="line">           // 允许那种请求方法</span><br><span class="line">          response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;POST, GET, OPTIONS, DELETE,HEAD&quot;);</span><br><span class="line">           response.setHeader(&quot;Access-Control-Max-Age&quot;, &quot;0&quot;);</span><br><span class="line">           // 允许请求头里的参数列表</span><br><span class="line">           response.setHeader(&quot;Access-Control-Allow-Headers&quot;,</span><br><span class="line">                  &quot;Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, X-E4M-With,userId,token&quot;);</span><br><span class="line">           // 允许对方带cookie访问</span><br><span class="line">     response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);</span><br><span class="line">          response.setHeader(&quot;XDomainRequestAllowed&quot;, &quot;1&quot;);</span><br><span class="line">           System.out.println(&quot;正在跨域&quot;);</span><br><span class="line">       &#125;</span><br><span class="line">       return true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
