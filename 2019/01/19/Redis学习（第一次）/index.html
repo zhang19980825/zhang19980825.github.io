@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="Redis数据结构分析1.简单动态字符串（String）这里的String并不等同于我们c语言中的String字符串类型，它被称为简单类型字符串（SDS）,先来看一下其定义1234567891011,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Redis学习（第一次）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Redis学习（第一次）</h1>
+        <div class="stuff">
+            <span>一月 19, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Redis学习（第一次）/">Redis学习（第一次）</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="Redis数据结构分析"><a href="#Redis数据结构分析" class="headerlink" title="Redis数据结构分析"></a>Redis数据结构分析</h2><h3 id="1-简单动态字符串（String）"><a href="#1-简单动态字符串（String）" class="headerlink" title="1.简单动态字符串（String）"></a>1.简单动态字符串（String）</h3><p>这里的String并不等同于我们c语言中的String字符串类型，它被称为简单类型字符串（SDS）,先来看一下其定义<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/*  </span><br><span class="line"> * 保存字符串对象的结构  </span><br><span class="line"> */  </span><br><span class="line">struct sdshdr &#123;  </span><br><span class="line">      </span><br><span class="line">    // buf 中已占用空间的长度  </span><br><span class="line">    int len;  </span><br><span class="line">  </span><br><span class="line">    // buf 中剩余可用空间的长度  </span><br><span class="line">    int free;  </span><br><span class="line">  </span><br><span class="line">    // 数据空间  </span><br><span class="line">    char buf[];  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>SDS和C语言中String的区别：<br>1.获取字符串长度时间复杂度<br>传统的C 字符串 使用长度为N+1 的字符串数组来表示长度为N 的字符串，所以为了获取一个长度为C字符串的长度，必须遍历整个字符串。<br>和C 字符串不同，SDS 的数据结构中，有专门用于保存字符串长度的变量，我们可以通过获取len 属性的值，直接知道字符串长度。<br>2.杜绝缓冲区溢出<br>当在内存中有两个紧挨的字符串时，当要改变第二个字符串的时候，但是又忘了为字符串重新分配空间时，就会出现缓冲区溢出的情况，但是Redis在修改字符串的时候，会提前对内存空间进行一个重新分配的过程，可以避免这种问题<br>3.减少修改字符串时带来的内存重分配次数<br>简单来说就是c字符串修改n次字符串一定会分配n次内存，而Redis修改n次字符串至多分配n次内存<br>4.字符串存储内容<br>C 字符串中的字符必须符合某种编码，并且除了字符串的末尾之外，字符串里面不能包含空字符，否则最先被程序读入的空字符将被误认为是字符串结尾，这些限制使得C字符串只能保存文本数据，而不能保存想图片，音频，视频，压缩文件这样的二进制数据。但是在Redis中，不是靠空字符来判断字符串的结束的，而是通过len这个属性。那么，即便是中间出现了空字符对于SDS来说，读取该字符仍然是可以的。  </p>
+<h3 id="2-链表"><a href="#2-链表" class="headerlink" title="2.链表"></a>2.链表</h3><p>ListNode作为链表的节点，并且是双向链表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct listNode&#123;</span><br><span class="line">      struct listNode *prev;</span><br><span class="line">      struct listNode * next;</span><br><span class="line">      void * value;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过直接操作list 来操作链表<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">typedef struct list&#123;</span><br><span class="line">    //表头节点</span><br><span class="line">    listNode  * head;</span><br><span class="line">    //表尾节点</span><br><span class="line">    listNode  * tail;</span><br><span class="line">    //链表长度</span><br><span class="line">    unsigned long len;</span><br><span class="line">    //节点值复制函数</span><br><span class="line">    void *(*dup) (void *ptr);</span><br><span class="line">    //节点值释放函数</span><br><span class="line">    void (*free) (void *ptr);</span><br><span class="line">    //节点值对比函数</span><br><span class="line">    int (*match)(void *ptr, void *key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>链表的特性  </p>
+<ul>
+<li>双端：链表节点带有prev 和next 指针，获取某个节点的前置节点和后置节点的时间复杂度都是O（N）  </li>
+<li>无环：表头节点的 prev 指针和表尾节点的next 都指向NULL，对立案表的访问时以NULL为截止  </li>
+<li>表头和表尾：因为链表带有head指针和tail 指针，程序获取链表头结点和尾节点的时间复杂度为O(1)  </li>
+<li>长度计数器：链表中存有记录链表长度的属性 len  </li>
+<li><p>多态：链表节点使用 void* 指针来保存节点值，并且可以通过list 结构的dup 、 free、 match三个属性为节点值设置类型特定函数。  </p>
+<h3 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h3><p>哈希表：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">typedef struct dictht &#123;</span><br><span class="line">   //哈希表数组</span><br><span class="line">   dictEntry **table;</span><br><span class="line">   //哈希表大小</span><br><span class="line">   unsigned long size;</span><br><span class="line"></span><br><span class="line">   //哈希表大小掩码，用于计算索引值</span><br><span class="line">   unsigned long sizemask;</span><br><span class="line">   //该哈希表已有节点的数量</span><br><span class="line">   unsigned long used;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>哈希表节点（ dictEntry ）  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> typeof struct dictEntry&#123;</span><br><span class="line">   //键</span><br><span class="line">   void *key;</span><br><span class="line">   //值</span><br><span class="line">   union&#123;</span><br><span class="line">      void *val;</span><br><span class="line">      uint64_tu64;</span><br><span class="line">      int64_ts64;</span><br><span class="line">   &#125;</span><br><span class="line">   struct dictEntry *next;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>字典：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> typedef struct dict &#123;</span><br><span class="line">    // 类型特定函数</span><br><span class="line">    dictType *type;</span><br><span class="line">    // 私有数据</span><br><span class="line">    void *privedata;</span><br><span class="line">    // 哈希表</span><br><span class="line">    dictht  ht[2];</span><br><span class="line">    // rehash 索引</span><br><span class="line">    in trehashidx;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://img.027cgb.com/613363/1053081-20170102212225862-973112494.png" alt="avatar"><br>解决哈希冲突:<br>随着对哈希表的不断操作，哈希表保存的键值对会逐渐的发生改变，为了让哈希表的负载因子维持在一个合理的范围之内，我们需要对哈希表的大小进行相应的扩展或者压缩，这时候，我们可以通过 rehash（重新散列）操作来完成。 在实际开发过程中，这个rehash 操作并不是一次性、集中式完成的，而是分多次、渐进式地完成的。<br>渐进式rehash 的详细步骤：<br>　　　1、为ht[1] 分配空间，让字典同时持有ht[0]和ht[1]两个哈希表<br>　　　2、在几点钟维持一个索引计数器变量rehashidx，并将它的值设置为0，表示rehash 开始<br>　　　3、在rehash 进行期间，每次对字典执行CRUD操作时，程序除了执行指定的操作以外，还会将ht[0]中的数据rehash 到ht[1]表中，并且将rehashidx加一<br>　　　4、当ht[0]中所有数据转移到ht[1]中时，将rehashidx 设置成-1，表示rehash 结束  </p>
+<h3 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h3><p>跳跃表（skiplist）是一种有序数据结构，它通过在每个节点中维持多个指向其他节点的指针，从而达到快速访问节点的目的<br>Redis 的跳跃表 主要由两部分组成：zskiplist（链表）和zskiplistNode （节点）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> typedef struct zskiplistNode&#123;</span><br><span class="line">　　　//层：level 数组可以包含多个元素，每个元素都包含一个指向其他节点的指针。</span><br><span class="line">     struct zskiplistLevel&#123;</span><br><span class="line">　　　　　//前进指针</span><br><span class="line">        struct zskiplistNode *forward;</span><br><span class="line">　　　　//跨度</span><br><span class="line">        unsigned int span;</span><br><span class="line">    &#125; level[];</span><br><span class="line">　　//后退指针</span><br><span class="line">    struct zskiplistNode *backward;</span><br><span class="line">　　//跳跃表中的所有节点都按分值从小到大排序。</span><br><span class="line">    double score;</span><br><span class="line">　　//成员对象 成员对象指向一个字符串，这个字符串对象保存着一个SDS值</span><br><span class="line">    robj *obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"> typedef struct zskiplist &#123;</span><br><span class="line">     //表头节点和表尾节点</span><br><span class="line">     structz skiplistNode *header,*tail;</span><br><span class="line">     //表中节点数量</span><br><span class="line">     unsigned long length;</span><br><span class="line">     //表中层数最大的节点的层数</span><br><span class="line">     int level;</span><br><span class="line"></span><br><span class="line">&#125;zskiplist;</span><br></pre></td></tr></table></figure>
+<p><img src="http://img.027cgb.com/613363/0119001.png" alt="avatar">  </p>
+</li>
+<li>跳跃表是有序集合的底层实现之一</li>
+<li>主要有zskiplist 和zskiplistNode两个结构组成</li>
+<li>每个跳跃表节点的层高都是1至32之间的随机数</li>
+<li>在同一个跳跃表中，多个节点可以包含相同的分值，但每个节点的对象必须是唯一的</li>
+<li>节点按照分值的大小从大到小排序，如果分值相同，则按成员对象大小排序<h3 id="整数集合（Intset）"><a href="#整数集合（Intset）" class="headerlink" title="整数集合（Intset）"></a>整数集合（Intset）</h3>整数集合其实就是一个特殊的集合，里面存储的数据只能够是整数，并且数据量不能过大。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef struct intset&#123;</span><br><span class="line">    //编码方式</span><br><span class="line">    uint32_t enconding;</span><br><span class="line">   // 集合包含的元素数量</span><br><span class="line">    uint32_t length;</span><br><span class="line">    //保存元素的数组    </span><br><span class="line">    int8_t contents[];</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>intset 在默认情况下会帮我们设定整数集合中的编码方式，但是当我们存入的整数不符合整数集合中的编码格式时，就需要使用到Redis 中的升级策略来解决<br>Intset 中升级整数集合并添加新元素共分为三步进行：<br>1、根据新元素的类型，扩展整数集合底层数组的空间大小，并为新元素分配空间<br>2、将底层数组现有的所有元素都转换成新的编码格式，重新分配空间<br>3、将新元素加入到底层数组中</p>
+<h3 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h3><p>　压缩列表是列表键和哈希键的底层实现之一。当一个列表键只把汗少量列表项，并且每个列表项要么就是小整数，要么就是长度比较短的字符串，那么Redis 就会使用压缩列表来做列表键的底层实现。压缩列表（ziplist）是Redis为了节省内存而开发的，是由一系列特殊编码的连续内存块组成的顺序型数据结构，一个压缩列表可以包含任意多个节点（entry），每个节点可以保存一个字节数组或者一个整数值。<br>  压缩列表的原理：压缩列表并不是对数据利用某种算法进行压缩，而是将数据照一定规则编码在一块连续的内存区域，目的是节省内存。通常作为列表键和哈希键的底层实现之一。 </p>
+<h2 id="Redis五种数据类型的底层实现"><a href="#Redis五种数据类型的底层实现" class="headerlink" title="Redis五种数据类型的底层实现"></a>Redis五种数据类型的底层实现</h2><p>  Redis中的每个对象都是由 redisObject 结构来表示：<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  typedef struct redisObject&#123;</span><br><span class="line">     //类型</span><br><span class="line">     unsigned type:4;</span><br><span class="line">     //编码</span><br><span class="line">     unsigned encoding:4;</span><br><span class="line">     //指向底层数据结构的指针</span><br><span class="line">     void *ptr;</span><br><span class="line">     //引用计数</span><br><span class="line">     int refcount;</span><br><span class="line">     //记录最后一次被程序访问的时间</span><br><span class="line">     unsigned lru:22;</span><br><span class="line"> </span><br><span class="line">&#125;robj</span><br></pre></td></tr></table></figure></p>
+<p>对象的 prt 指针指向对象底层的数据结构，而数据结构由 encoding 属性来决定。每种类型的对象都至少使用了两种不同的编码：<br> <img src="http://img.027cgb.com/613363/0119002.png" alt="avatar"></p>
+<h3 id="1-字符串对象"><a href="#1-字符串对象" class="headerlink" title="1.字符串对象"></a>1.字符串对象</h3><p>字符串对象的编码可以是int，raw或者embstr。<br>　　1、int 编码：保存的是可以用 long 类型表示的整数值。<br>　　2、raw 编码：保存长度大于44字节的字符串（redis3.2版本之前是39字节，之后是44字节）。<br>　　3、embstr 编码：保存长度小于44字节的字符串（redis3.2版本之前是39字节，之后是44字节）。<br>int编码是用来保存整数值，raw编码是用来保存长字符串，而embstr是用来保存短字符串。<br>当 int 编码保存的值不再是整数，或大小超过了long的范围时，自动转化为raw。<br>对于 embstr 编码，由于 Redis 没有对其编写任何的修改程序（embstr 是只读的），在对embstr对象进行修改时，都会先转化为raw再进行修改，因此，只要是修改embstr对象，修改后的对象一定是raw的，无论是否达到了44个字节。</p>
+<h3 id="2-列表对象"><a href="#2-列表对象" class="headerlink" title="2.列表对象"></a>2.列表对象</h3><p>列表对象的编码可以是 ziplist(压缩列表) 和 linkedlist(双端链表)。<br>当同时满足下面两个条件时，使用ziplist（压缩列表）编码：<br>　　1、列表保存元素个数小于512个<br>　　2、每个元素长度小于64字节<br>不能满足这两个条件的时候使用 linkedlist 编码。</p>
+<h3 id="3-哈希对象"><a href="#3-哈希对象" class="headerlink" title="3.哈希对象"></a>3.哈希对象</h3><p>哈希对象的编码可以是 ziplist 或者 hashtable。<br>当使用ziplist，也就是压缩列表作为底层实现时，新增的键值对是保存到压缩列表的表尾。<br>当使用 hashtable 编码时，　hashtable 编码的哈希表对象底层使用字典数据结构，哈希对象中的每个键值对都使用一个字典键值对。<br>和上面列表对象使用 ziplist 编码一样，当同时满足下面两个条件时，使用ziplist（压缩列表）编码：<br>　　1、列表保存元素个数小于512个<br>　　2、每个元素长度小于64字节<br>不能满足这两个条件的时候使用 hashtable 编码。</p>
+<h3 id="4-集合对象"><a href="#4-集合对象" class="headerlink" title="4.集合对象"></a>4.集合对象</h3><p>集合对象的编码可以是 intset 或者 hashtable。<br>　　intset 编码的集合对象使用整数集合作为底层实现，集合对象包含的所有元素都被保存在整数集合中。<br>　　hashtable 编码的集合对象使用字典作为底层实现，字典的每个键都是一个字符串对象，这里的每个字符串对象就是一个集合中的元素，而字典的值则全部设置为 null。这里可以类比Java集合中HashSet 集合的实现，HashSet 集合是由 HashMap 来实现的，集合中的元素就是 HashMap 的key，而 HashMap 的值都设为 null。<br>当集合同时满足以下两个条件时，使用 intset 编码：<br>　　1、集合对象中所有元素都是整数<br>　　2、集合对象所有元素数量不超过512<br>　　不能满足这两个条件的就使用 hashtable 编码。第二个条件可以通过配置文件的 set-max-intset-entries 进行配置。</p>
+<h3 id="5-有序集合对象"><a href="#5-有序集合对象" class="headerlink" title="5.有序集合对象"></a>5.有序集合对象</h3><p>有序集合的编码可以是 ziplist 或者 skiplist。<br>ziplist 编码的有序集合对象使用压缩列表作为底层实现，每个集合元素使用两个紧挨在一起的压缩列表节点来保存，第一个节点保存元素的成员，第二个节点保存元素的分值。并且压缩列表内的集合元素按分值从小到大的顺序进行排列，小的放置在靠近表头的位置，大的放置在靠近表尾的位置。<br>skiplist 编码的有序集合对象使用 zet 结构作为底层实现，一个 zset 结构同时包含一个字典和一个跳跃表：  </p>
+<p>字典的键保存元素的值，字典的值则保存元素的分值；跳跃表节点的 object 属性保存元素的成员，跳跃表节点的 score 属性保存元素的分值。<br>　　这两种数据结构会通过指针来共享相同元素的成员和分值，所以不会产生重复成员和分值，造成内存的浪费。<br>　　说明：其实有序集合单独使用字典或跳跃表其中一种数据结构都可以实现，但是这里使用两种数据结构组合起来，原因是假如我们单独使用 字典，虽然能以 O(1) 的时间复杂度查找成员的分值，但是因为字典是以无序的方式来保存集合元素，所以每次进行范围操作的时候都要进行排序；假如我们单独使用跳跃表来实现，虽然能执行范围操作，但是查找操作有 O(1)的复杂度变为了O(logN)。因此Redis使用了两种数据结构来共同实现有序集合。</p>
+<h2 id="Redis事务管理"><a href="#Redis事务管理" class="headerlink" title="Redis事务管理"></a>Redis事务管理</h2><h3 id="Redis事务介绍"><a href="#Redis事务介绍" class="headerlink" title="Redis事务介绍"></a>Redis事务介绍</h3><ul>
+<li>Redis的事务是通过MULTI，EXEC，DISCARD和WATCH这四个命令来完成的。  </li>
+<li>Redis的单个命令都是原子性的，所以这里确保事务性的对象是命令集合。  </li>
+<li>Redis将命令集合序列化并确保处于同一事务的命令集合连续且不被打断的执行  </li>
+<li>Redis不支持回滚操作</li>
+</ul>
+<p>MULTI<br>    用于标记事务块的开始。<br>    Redis会将后续的命令逐个放入队列中，然后使用EXEC命令原子化地执行这个命令序列。<br>EXEC<br>    在一个事务中执行所有先前放入队列的命令，然后恢复正常的连接状态<br>DISCARD<br>    清除所有先前在一个事务中放入队列的命令，然后恢复正常的连接状态。<br>WATCH<br>    当某个事务需要按条件执行时，就要使用这个命令将给定的键设置为受监控的状态。<br>    注意事项：使用该命令可以实现redis的乐观锁。（就是说watch命令监控了一个key，当这个可以发生变化的时候，事务就不执行）<br>UNWATCH<br>    清除所有先前为一个事务监控的键。  </p>
+<h3 id="事务失败处理"><a href="#事务失败处理" class="headerlink" title="事务失败处理"></a>事务失败处理</h3><p>Redis语法错误  （编译器出错）<br>当multi启动事务之后，假如说有三条命令，而第一条命令出错，第二条命令正确，那么执行exec命令的时候，就会因为先执行第一条命令出错，后面都不会执行<br>Redis类型错误（可以理解成运行期错误）<br>例如：set s1 444<br>  lpush s1 2 3 4<br>  这两条命令会出现类型不匹配的问题  但是s1所对应的值还是会变为444<br>为什么redis不支持事务回滚？<br>1、大多数事务失败是因为语法错误或者类型错误，这两种错误，在开发阶段都是可以预见的<br>2、redis为了性能方面就忽略了事务回滚</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
