@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="Redis实现分布式锁Jedis连接Ubuntu上的linux：1.在redis配置文件redis.conf中注释掉# bind 127.0.0.1,bind命令表示绑定的ip才能访问redis服务,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Redis学习（第二次）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Redis学习（第二次）</h1>
+        <div class="stuff">
+            <span>一月 20, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Redis学习（第二次）/">Redis学习（第二次）</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="Redis实现分布式锁"><a href="#Redis实现分布式锁" class="headerlink" title="Redis实现分布式锁"></a>Redis实现分布式锁</h2><p>Jedis连接Ubuntu上的linux：<br>1.在redis配置文件redis.conf中注释掉# bind 127.0.0.1,bind命令表示绑定的ip才能访问redis服务器   加上bind 自己linux服务器的ip地址<br>2.redis配置文件redis.conf中protected-mode yes  是否开启保护模式，由yes该为no<br>3.关闭linux 的防火墙<br>注意事项：<br>互斥性：在任意时刻，只能有一个。客户端能持有锁<br>同一性：加锁和解锁必须是同一个客户端，客户端不能解别的客户端的锁<br>可重入性：即使有一个客户端在持有锁的期间崩溃而没有主动解锁，也能保证后续其他客户端能加锁。<br>举例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line">package com.java.redis;</span><br><span class="line"></span><br><span class="line">import redis.clients.jedis.Jedis;</span><br><span class="line">import redis.clients.jedis.JedisPool;</span><br><span class="line">import redis.clients.jedis.JedisPoolConfig;</span><br><span class="line"></span><br><span class="line">public class JedisTest &#123;</span><br><span class="line">	private static int port = 6379;</span><br><span class="line">	private static String host = &quot;192.168.96.143&quot;;</span><br><span class="line">	private static JedisPool pool;</span><br><span class="line"></span><br><span class="line">	static &#123;</span><br><span class="line">		JedisPoolConfig config = new JedisPoolConfig();</span><br><span class="line">		config.setMinIdle(5);</span><br><span class="line"></span><br><span class="line">		pool = new JedisPool(config, host, port);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static Jedis getJedis() &#123;</span><br><span class="line">		return pool.getResource();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * 获取分布式锁</span><br><span class="line">	 * </span><br><span class="line">	 * @param lockKey</span><br><span class="line">	 * @param requestId</span><br><span class="line">	 * @param timeout</span><br><span class="line">	 * @return</span><br><span class="line">	 */</span><br><span class="line">	public static boolean getLock(String lockKey, String requestId, int timeout) &#123;</span><br><span class="line">		// 获取Jedis对象，负责和远程redis服务器进行连接</span><br><span class="line">		Jedis jedis = getJedis();</span><br><span class="line">		// 参数三：NX和XX</span><br><span class="line">		// 参数sin：EX和PX</span><br><span class="line">		String result = jedis.set(lockKey, requestId, &quot;NX&quot;, &quot;EX&quot;, timeout);</span><br><span class="line">		if (result == &quot;OK&quot;) &#123;</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static synchronized boolean getLock2(String lockKey, String requestId, int timeout) &#123;</span><br><span class="line">		// 获取Jedis对象，负责和远程redis服务器进行连接</span><br><span class="line">		Jedis jedis = getJedis();</span><br><span class="line"></span><br><span class="line">		Long result = jedis.setnx(lockKey, requestId);</span><br><span class="line">		if (result == 1) &#123;</span><br><span class="line">			// 设置有效期</span><br><span class="line">			jedis.expire(lockKey, timeout);</span><br><span class="line">			return true;</span><br><span class="line">		&#125;</span><br><span class="line">		return false;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/***</span><br><span class="line">	 * 释放分布式锁的代码</span><br><span class="line">	 * @param lockKey</span><br><span class="line">	 * @param requestId</span><br><span class="line">	 */</span><br><span class="line">	public static void releaseLock(String lockKey, String requestId) &#123;</span><br><span class="line">		// 获取Jedis对象，负责和远程redis服务器进行连接</span><br><span class="line">		Jedis jedis = getJedis();</span><br><span class="line">		if (requestId.equals(jedis.get(lockKey))) &#123;</span><br><span class="line">			jedis.del(lockKey);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		poolConnect();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void singleConnect() &#123;</span><br><span class="line">		// Jedis单实例连接</span><br><span class="line">		Jedis je = new Jedis(host, port);</span><br><span class="line">		String result = je.get(&quot;zhang&quot;);</span><br><span class="line">		System.out.println(result);</span><br><span class="line">		je.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void poolConnect() &#123;</span><br><span class="line">		JedisPoolConfig config = new JedisPoolConfig();</span><br><span class="line">		config.setMinIdle(5);//连接池的最大连接数</span><br><span class="line"></span><br><span class="line">		JedisPool pool = new JedisPool(config, host, port);</span><br><span class="line">		Jedis je = pool.getResource();</span><br><span class="line"></span><br><span class="line">		String result = je.get(&quot;zhang&quot;);</span><br><span class="line">		System.out.println(result);</span><br><span class="line"></span><br><span class="line">		je.close();</span><br><span class="line">		pool.close();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Spring整合JedisPOOL：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</span><br><span class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot;</span><br><span class="line">	xmlns:context=&quot;http://www.springframework.org/schema/context&quot;</span><br><span class="line">	xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot; xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;</span><br><span class="line">	xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans </span><br><span class="line">		http://www.springframework.org/schema/beans/spring-beans.xsd </span><br><span class="line">		http://www.springframework.org/schema/mvc </span><br><span class="line">		http://www.springframework.org/schema/mvc/spring-mvc.xsd </span><br><span class="line">		http://www.springframework.org/schema/context </span><br><span class="line">		http://www.springframework.org/schema/context/spring-context.xsd </span><br><span class="line">		http://www.springframework.org/schema/aop </span><br><span class="line">		http://www.springframework.org/schema/aop/spring-aop.xsd </span><br><span class="line">		http://www.springframework.org/schema/tx </span><br><span class="line">		http://www.springframework.org/schema/tx/spring-tx.xsd &quot;&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- 连接池配置 --&gt;</span><br><span class="line">	&lt;bean id=&quot;jedisPoolConfig&quot; class=&quot;redis.clients.jedis.JedisPoolConfig&quot;&gt;</span><br><span class="line">		&lt;!-- 最大连接数 --&gt;</span><br><span class="line">		&lt;property name=&quot;maxTotal&quot; value=&quot;30&quot; /&gt;</span><br><span class="line">		&lt;!-- 最大空闲连接数 --&gt;</span><br><span class="line">		&lt;property name=&quot;maxIdle&quot; value=&quot;10&quot; /&gt;</span><br><span class="line">		&lt;!-- 每次释放连接的最大数目 --&gt;</span><br><span class="line">		&lt;property name=&quot;numTestsPerEvictionRun&quot; value=&quot;1024&quot; /&gt;</span><br><span class="line">		&lt;!-- 释放连接的扫描间隔（毫秒） --&gt;</span><br><span class="line">		&lt;property name=&quot;timeBetweenEvictionRunsMillis&quot; value=&quot;30000&quot; /&gt;</span><br><span class="line">		&lt;!-- 连接最小空闲时间 --&gt;</span><br><span class="line">		&lt;property name=&quot;minEvictableIdleTimeMillis&quot; value=&quot;1800000&quot; /&gt;</span><br><span class="line">		&lt;!-- 连接空闲多久后释放, 当空闲时间&gt;该值 且 空闲连接&gt;最大空闲连接数 时直接释放 --&gt;</span><br><span class="line">		&lt;property name=&quot;softMinEvictableIdleTimeMillis&quot; value=&quot;10000&quot; /&gt;</span><br><span class="line">		&lt;!-- 获取连接时的最大等待毫秒数,小于零:阻塞不确定的时间,默认-1 --&gt;</span><br><span class="line">		&lt;property name=&quot;maxWaitMillis&quot; value=&quot;1500&quot; /&gt;</span><br><span class="line">		&lt;!-- 在获取连接的时候检查有效性, 默认false --&gt;</span><br><span class="line">		&lt;property name=&quot;testOnBorrow&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">		&lt;!-- 在空闲时检查有效性, 默认false --&gt;</span><br><span class="line">		&lt;property name=&quot;testWhileIdle&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">		&lt;!-- 连接耗尽时是否阻塞, false报异常,ture阻塞直到超时, 默认true --&gt;</span><br><span class="line">		&lt;property name=&quot;blockWhenExhausted&quot; value=&quot;false&quot; /&gt;</span><br><span class="line">	&lt;/bean&gt;</span><br><span class="line"></span><br><span class="line">	&lt;!-- redis单机 通过连接池 --&gt;</span><br><span class="line">	&lt;bean id=&quot;jedisPool&quot; class=&quot;redis.clients.jedis.JedisPool&quot;</span><br><span class="line">		destroy-method=&quot;close&quot;&gt;</span><br><span class="line">		&lt;constructor-arg name=&quot;poolConfig&quot; ref=&quot;jedisPoolConfig&quot; /&gt;</span><br><span class="line">		&lt;constructor-arg name=&quot;host&quot; value=&quot;192.168.242.130&quot; /&gt;</span><br><span class="line">		&lt;constructor-arg name=&quot;port&quot; value=&quot;6379&quot; /&gt;</span><br><span class="line">	&lt;/bean&gt;</span><br><span class="line">&lt;/beans&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Test：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">	public void testJedisPool() &#123;</span><br><span class="line">		JedisPool pool = (JedisPool) applicationContext.getBean(&quot;jedisPool&quot;);</span><br><span class="line">		Jedis jedis = null;</span><br><span class="line">		try &#123;</span><br><span class="line">			jedis = pool.getResource();</span><br><span class="line"></span><br><span class="line">			jedis.set(&quot;name&quot;, &quot;lisi&quot;);</span><br><span class="line">			String name = jedis.get(&quot;name&quot;);</span><br><span class="line">			System.out.println(name);</span><br><span class="line">		&#125; catch (Exception ex) &#123;</span><br><span class="line">			ex.printStackTrace();</span><br><span class="line">		&#125; finally &#123;</span><br><span class="line">			if (jedis != null) &#123;</span><br><span class="line">				// 关闭连接</span><br><span class="line">				jedis.close();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Redis持久化方案"><a href="#Redis持久化方案" class="headerlink" title="Redis持久化方案"></a>Redis持久化方案</h2><p>RDB是Redis默认采用的持久化方式，RDB方式是通过快照（snapshotting）完成的，当符合一定条件时Redis会自动将内存中的数据进行快照并持久化到硬盘。<br>Redis会在指定的情况下触发快照<br>1.符合自定义配置的快照规则<br>2.执行save或者bgsave命令<br>3.执行flushall命令<br>4.执行主从复制操作<br>在redis.conf中设置自定义快照规则  </p>
+<ul>
+<li>RDB持久化条件<br>格式：save <seconds> <changes><br>save 900 1  ： 表示15分钟（900秒钟）内至少1个键被更改则进行快照。可以配置多个条件（每行配置一个条件），每个条件之间是“或”的关系。</changes></seconds></li>
+<li>配置dir指定rdb快照文件的位置  </li>
+<li>配置dbfilename指定rdb快照文件的名称  </li>
+</ul>
+<p>快照的实现原理：  </p>
+<ul>
+<li>redis使用fork函数复制一份当前进程的副本(子进程)</li>
+<li>父进程继续接收并处理客户端发来的命令，而子进程开始将内存中的数据写入硬盘中的临时文件。</li>
+<li>当子进程写入完所有数据后会用该临时文件替换旧的RDB文件，至此，一次快照操作完成。  </li>
+</ul>
+<p>RDB优缺点</p>
+<ul>
+<li>缺点：使用RDB方式实现持久化，一旦Redis异常退出，就会丢失最后一次快照以后更改的所有数据。这个时候我们就需要根据具体的应用场景，通过组合设置自动快照条件的方式来将可能发生的数据损失控制在能够接受范围。如果数据相对来说比较重要，希望将损失降到最小，则可以使用AOF方式进行持久化  </li>
+<li>优点： RDB可以最大化Redis的性能：父进程在保存RDB文件时唯一要做的就是fork出一个子进程，然后这个子进程就会处理接下来的所有保存工作，父进程无序执行任何磁盘I/O操作。同时这个也是一个缺点，如果数据集比较大的时候，fork可以能比较耗时，造成服务器在一段时间内停止处理客户端的请求；  </li>
+</ul>
+<p>AOF方式:<br>开启AOF持久化后每执行一条会更改Redis中的数据的命令，Redis就会将该命令写入硬盘中的AOF文件，这一过程显然会降低Redis的性能，但大部分情况下这个影响是能够接受的，另外使用较快的硬盘可以提高AOF的性能。  </p>
+<ul>
+<li>可以通过修改redis.conf配置文件中的appendonly参数开启  </li>
+<li>AOF文件的保存位置和RDB文件的位置相同，都是通过dir参数设置的。</li>
+<li>默认的文件名是appendonly.aof，可以通过appendfilename参数修改：  </li>
+</ul>
+<p>AOF重写原理:<br>Redis 可以在 AOF 文件体积变得过大时，自动地在后台对 AOF 进行重写<br>重写后的新 AOF 文件包含了恢复当前数据集所需的最小命令集合。<br>整个重写操作是绝对安全的，因为 Redis 在创建新 AOF 文件的过程中，会继续将命令追加到现有的 AOF 文件里面，即使重写过程中发生停机，现有的 AOF 文件也不会丢失。 而一旦新 AOF 文件创建完毕，Redis 就会从旧 AOF 文件切换到新 AOF 文件，并开始对新 AOF 文件进行追加操作。<br>AOF 文件有序地保存了对数据库执行的所有写入操作， 这些写入操作以 Redis 协议的格式保存， 因此 AOF 文件的内容非常容易被人读懂， 对文件进行分析（parse）也很轻松  </p>
+<p>Redis每次更改数据的时候， aof机制都会将命令记录到aof文件，但是实际上由于操作系统的缓存机制，数据并没有实时写入到硬盘，而是进入硬盘缓存。再通过硬盘缓存机制去刷新到保存到文件</p>
+<p>如何选择RDB和AOF</p>
+<ul>
+<li>一般来说,如果对数据的安全性要求非常高的话，应该同时使用两种持久化功能。</li>
+<li>如果可以承受数分钟以内的数据丢失，那么可以只使用 RDB 持久化。</li>
+<li>有很多用户都只使用 AOF 持久化， 但并不推荐这种方式： 因为定时生成 RDB 快照（snapshot）非常便于进行数据库备份， 并且 RDB 恢复数据集的速度也要比 AOF 恢复的速度要快 。</li>
+<li>两种持久化策略可以同时使用，也可以使用其中一种。如果同时使用的话， 那么Redis重启时，会优先使用AOF文件来还原数据</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
