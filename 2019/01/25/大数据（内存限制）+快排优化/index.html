@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>知足常乐。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="Redis实现分布式锁Jedis连接Ubuntu上的linux：1.在redis配置文件redis.conf中注释掉# bind 127.0.0.1,bind命令表示绑定的ip才能访问redis服务,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="知足常乐。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">大数据（内存限制）+快排优化</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">大数据（内存限制）+快排优化</h1>
+        <div class="stuff">
+            <span>一月 25, 2019</span>
+            
+  <ul class="post-tags-list"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/大数据（内存限制）-快排优化/">大数据（内存限制）+快排优化</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h2><p>问题描述：判断一个黑名单是否在100亿黑名单之中，可根据url进行判断，每个网页的URL最多占用64B<br>要求：1.有一定的判断失误率  2.要求使用的额外空间不能超过30G<br>思想：先构建一个长度为m的bit类型的数组，数组的每一个元素都代表了一个bit，再假设有k哥hash函数，每个hash函数之间相互独立，对于同一个输入对象，经过hash函数计算出来的值也是相互独立的，那么当这100亿个URL经过k个hash函数计算的值也是相互独立的，这时把计算出来的值与数组长度-1进行与运算，算出来的值在相应的位置涂黑，如果算出同样的值，就涂黑的颜色变深，这样一个布隆过滤器就构建完成了，当现在要判断一个url是否是黑名单中的一个的时候，就让这个URL经过k次hash运算再与数组长度减一进行与运算，会得出k个值，<br>如果说这k个值对应的数组有一个是白色的，那么就肯定不存在，否则的话，就大概率存在，因为存在特殊情况，比如说数组的长度选的太小，算出来的与长度-1相与的值就会把数组全部覆盖，这样就会出现误判的情况。因此数组的长度，哈希函数的个数都得进行折中的选择，这个具体的数字需要一定的数学公式推导。</p>
+<h2 id="20亿个整数中找出出现次数最多的数（有内存限制）"><a href="#20亿个整数中找出出现次数最多的数（有内存限制）" class="headerlink" title="20亿个整数中找出出现次数最多的数（有内存限制）"></a>20亿个整数中找出出现次数最多的数（有内存限制）</h2><p>思想：将这20亿个整数通过哈希函数分为符合内存的N个文件，因为hash函数不可能把相同的数哈希到同一个文件之中，同时这个n又要保证最坏的情况内存不会查超过题目所给的要求，然后用哈希表分别算出这n个文件中每一个数出现的次数，最后再比较这n个文件中出现次数最最多的一个数，例如：32位的整数存储数字肯定不会溢出，哈希表的key和value都是4B，那么当哈希表的记录数为2亿个时，会占用1.6GB的空间，所以可以取n可以取12,13,14,15</p>
+<h2 id="40亿个非负整数找到一个没出现过的数-32位数的范围是4294967295"><a href="#40亿个非负整数找到一个没出现过的数-32位数的范围是4294967295" class="headerlink" title="40亿个非负整数找到一个没出现过的数  32位数的范围是4294967295"></a>40亿个非负整数找到一个没出现过的数  32位数的范围是4294967295</h2><p>一般思想：申请一个数组数组大小为4294967295，遍历这40亿多个数，是几就把数组对应下标对应的数组设为1，第二次遍历的时候，看那个位置没有被设为1这个数组对应的下标对应的数就没有出现过。<br>进阶思想：可以把这个数组分成64个区间，举个例子内个区间大约是67108864，即数组的容量，在申请一个长度为64的数组，这个数组就用来记录这64个区间所存的数的数量，这样必定有一个数组的值少于4294967295，这个时候只需要关注这个区间的数就可以了，假如这个区间是第25区间，那么下次再进行遍历这40亿个数的时候只需要关注第25区间的数，其他数字省略，例如现在num落在第25区间了，这个时候把num-25*67108864的值设为1，遍历完成之后看一下数组的那个位置没有被设置为1，就是没有出现过的数  </p>
+<h2 id="100亿个URL中重复的URL-搜索词汇的TopK问题"><a href="#100亿个URL中重复的URL-搜索词汇的TopK问题" class="headerlink" title="100亿个URL中重复的URL/搜索词汇的TopK问题"></a>100亿个URL中重复的URL/搜索词汇的TopK问题</h2><p>思想：运用哈希分流的思想，要么把文件分到不同的机器上，要么把大文件分成多个小文件，具体情况根据题目要求而定，把大文件分流到不同的机器上之后，可以运用哈希函数统计各个文件中URL出现的次数，从而找出重复的URL，或者通过排序的方式，一般通过堆排序的方式。</p>
+<h2 id="40亿个非负整数中找到出现两次的数"><a href="#40亿个非负整数中找到出现两次的数" class="headerlink" title="40亿个非负整数中找到出现两次的数"></a>40亿个非负整数中找到出现两次的数</h2><p>思想：申请一个80亿的bit类型的数组，遍历这40亿个无符号整数，假如遍历到的这个值为num，就把bitArray[num<em>2]和bitArray[num</em>2+1]的值设为01，等到第二次遍历到num的值的时候，就把bitArray[num<em>2]和bitArray[num</em>2+1]的值设置为10，等到第三次碰到num值的时候，就把bitArray[num<em>2]和bitArray[num</em>2+1]的值设置为11，最后再把这个数组进行遍历，bitArray[num<em>2]和bitArray[num</em>2+1]的值如果都为1的话这个数就出现了两次。  </p>
+<h3 id="引申问题–40亿个数的中位数-（分区间法）"><a href="#引申问题–40亿个数的中位数-（分区间法）" class="headerlink" title="引申问题–40亿个数的中位数  （分区间法）"></a>引申问题–40亿个数的中位数  （分区间法）</h3><h2 id="一致性哈希的原理"><a href="#一致性哈希的原理" class="headerlink" title="一致性哈希的原理"></a>一致性哈希的原理</h2><p>背景：一般来说，会用服务器集群来实现数据缓存的存储，具体来说就是，对当前数据进行存储的时候，先计算出这条数据的id，采用哈希函数算出一个hash值，假设一共有N台机器，那么就用当前数据的哈希值与（N-1）进行与操作，这样肯定在N个机器的范围之中，但是这样会带来一定的问题，就是当增加机器或者减少机器的时候，已经存储的数据要发生存储位置的变化，带来的成本比较高。<br>一致性哈希算法：我们假设数据通过哈希函数算出来的哈希值在0~N的范围之中，我们就让这N个数手拉手形成一个环状，有多少台机器就把多少台机器也放入这个环中，当存储数据的时候，数据所对应的哈希值肯定会对应环中的某一个节点，那么他要放入那一个机器之中呢?可以把它放入顺时针寻找的最近的机器上,如果加上新的机器或者减少机器的数量，只需要改变部分数据的迁移，减少了成本,但是这样会出现如果机器分配不均匀的情况，就会让某些机器放入较多的数据，这种问题的解决方法是增加虚拟节点，每一个真正的机器节点各自增加一个虚拟节点使得机器的分配均匀性，这样当数据找到它所对应的虚拟节点的时候,就让它跳转存储到它所对应的真实的节点进行存储。</p>
+<h2 id="快排优化（1-基数值每次都取左中右之间数字数值排中间的数-2-当数组的长度小于等于13时候，就用插入排序）"><a href="#快排优化（1-基数值每次都取左中右之间数字数值排中间的数-2-当数组的长度小于等于13时候，就用插入排序）" class="headerlink" title="快排优化（1.基数值每次都取左中右之间数字数值排中间的数  2.当数组的长度小于等于13时候，就用插入排序）"></a>快排优化（1.基数值每次都取左中右之间数字数值排中间的数  2.当数组的长度小于等于13时候，就用插入排序）</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    //传统的快速排序由于基数选取的不确定性，如果基数选取的是数组的最大值或者最小值，那么此时快速排序的时间复杂度的相当于冒泡排序，所以取三//数优化的方法，每次都取出数组首，尾，中间，都取出三个数大小排中间//的数，</span><br><span class="line">    //确保快速排序的意义</span><br><span class="line">    public static int GetMidIndex(int a[], int left, int right) &#123;</span><br><span class="line">        int mid = left + ((right - left) &gt;&gt; 1);</span><br><span class="line">        if (a[left] &gt; a[mid]) &#123;</span><br><span class="line">            if (a[left] &lt; a[right])</span><br><span class="line">                return left;</span><br><span class="line">            else &#123;</span><br><span class="line">                if (a[right] &gt; a[mid])</span><br><span class="line">                    return right;</span><br><span class="line">                else</span><br><span class="line">                    return mid;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        else &#123;</span><br><span class="line">            if (mid &gt; right)</span><br><span class="line">                return mid;</span><br><span class="line">            else &#123;</span><br><span class="line">                if (left &lt; right)</span><br><span class="line">                    return left;</span><br><span class="line">                else</span><br><span class="line">                    return right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">//快排优化--小区间优化，当数组的长度很小一般来说是13或者小于13的时候，使用直接插入排序会比较有效率</span><br><span class="line">    public static void InsertSort(int a[], int left, int right) &#123;</span><br><span class="line">        int end = 0;</span><br><span class="line">        for (int i = 1; i &lt; right; i++) &#123;</span><br><span class="line">            end = i - 1;</span><br><span class="line">            int temp = a[i];</span><br><span class="line">            while (end &gt;= 0) &#123;</span><br><span class="line">                if (a[end] &gt; temp) &#123;</span><br><span class="line">                    a[end + 1] = a[end]; --end;</span><br><span class="line">                &#125; else break;</span><br><span class="line">            &#125; a[end + 1] = temp;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void quickSort(int array[],int left,int right)&#123;</span><br><span class="line">        if(left&gt;right)&#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        if((right-left+1)&lt;=13)&#123;</span><br><span class="line">            InsertSort(array,left,right);</span><br><span class="line">        &#125;</span><br><span class="line">        int t;</span><br><span class="line">        int i=left;//左边的指针</span><br><span class="line">        int j=right;//右边的指针</span><br><span class="line">        int temp=array[GetMidIndex(array,left,right)];</span><br><span class="line">        while(i!=j)&#123;</span><br><span class="line">            //让右边的指针开始跑，找到第一个小于基数的值</span><br><span class="line">            while(array[j]&gt;=temp&amp;&amp;i&lt;j)&#123;</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            //让左边的指针开始跑，找到第一个大于基数的值</span><br><span class="line">            while(array[i]&lt;=temp&amp;&amp;i&lt;j)&#123;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            t=array[i];</span><br><span class="line">            array[i]=array[j];</span><br><span class="line">            array[j]=t;</span><br><span class="line">        &#125;</span><br><span class="line">        array[left]=array[i];</span><br><span class="line">        array[i]=temp;</span><br><span class="line">        Test.quickSort(array,left,i-1);</span><br><span class="line">        Test.quickSort(array,i+1,right);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        int array[]=&#123;3,2,5,8,4,7,6,9&#125;;</span><br><span class="line">        Test.quickSort(array,0,7);</span><br><span class="line">        for(int i=0;i&lt;array.length;i++)&#123;</span><br><span class="line">            System.out.println(array[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://link.hhtjim.com/163/5146554.mp3"></li>
+                    
+                        <li title="1" data-url="http://link.hhtjim.com/qq/001faIUs4M2zna.mp3"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
