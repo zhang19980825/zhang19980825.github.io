@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一辈子很长，要和有趣的人度过。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="MySQL主从复制主从复制主要涉及三个线程：binlog 线程、I/O 线程和 SQL 线程。1.binlog 线程 ：负责将主服务器上的数据更改写入二进制日志中。2.I/O 线程 ：负责从主服务器,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="一辈子很长，要和有趣的人度过。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">MySQL主从复制，读写分离，分库分表Mycat</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">MySQL主从复制，读写分离，分库分表Mycat</h1>
+        <div class="stuff">
+            <span>一月 28, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h1 id="MySQL主从复制"><a href="#MySQL主从复制" class="headerlink" title="MySQL主从复制"></a>MySQL主从复制</h1><p>主从复制<br>主要涉及三个线程：binlog 线程、I/O 线程和 SQL 线程。<br>1.binlog 线程 ：负责将主服务器上的数据更改写入二进制日志中。<br>2.I/O 线程 ：负责从主服务器上读取二进制日志，并写入从服务器的中继日志中。<br>3.SQL 线程 ：负责读取中继日志并重放其中的 SQL 语句。<br><img src="http://img.027cgb.com/613363/012801.jpg" alt="avator"><br>首先关闭主从服务器的防火墙   </p>
+<h2 id="主服务器的配置："><a href="#主服务器的配置：" class="headerlink" title="主服务器的配置："></a>主服务器的配置：</h2><p>1.修改my.conf文件：<br>在[mysqld]段下添加：  </p>
+<p>#启用二进制日志<br>log-bin=mysql-bin  </p>
+<p>#服务器唯一ID，一般取IP最后一段<br>server-id=133 </p>
+<p>2.第二步：重启mysql服务<br>service mysqld restart</p>
+<p>3.第三步：建立帐户并授权slave（登录到MySQL）<br>mysql&gt;GRANT FILE ON <em>.</em> TO ‘root‘@’%’ IDENTIFIED BY ‘123456’; </p>
+<p>mysql&gt;GRANT REPLICATION SLAVE, REPLICATION CLIENT ON <em>.</em> to ‘root‘@’%’ identified by ‘root’;   </p>
+<p>mysql&gt;GRANT REPLICATION SLAVE ON <em>.</em> to ‘root‘@’%’ identified by ‘root’;   </p>
+<p>#一般不用root帐号，“%”表示所有客户端都可能连，只要帐号，密码正确，此处可用具体客户端IP代替，如192.168.145.226，加强安全。</p>
+<p>刷新权限<br>mysql&gt; FLUSH PRIVILEGES;<br>4.show master status;  查询master的状态  </p>
+<h2 id="从服务器配置"><a href="#从服务器配置" class="headerlink" title="从服务器配置"></a>从服务器配置</h2><p>第一步：修改my.conf文件<br>[mysqld]<br>server-id=135<br>第二步：删除UUID文件(如果是直接拷贝虚拟机的话，肯定会出现这个错误，如果重新装了的话可以越过此步骤)<br>删除/var/lib/mysql/auto.cnf文件，重新启动服务。<br>第三步：重启并登录到MySQL进行配置从服务器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt;change master to master_host=&apos;192.168.10.133&apos;,master_port=3306,master_user=&apos;root&apos;,master_password=&apos;root&apos;,master_log_file=&apos;mysql-bin.000001&apos;,master_log_pos=569</span><br></pre></td></tr></table></figure></p>
+<p>第四步：启动从服务器复制功能<br>mysql&gt;start slave;<br>第五步：检查从服务器复制功能状态：<br>mysql&gt; show slave status  </p>
+<h1 id="集群搭建之读写分离"><a href="#集群搭建之读写分离" class="headerlink" title="集群搭建之读写分离"></a>集群搭建之读写分离</h1><p>主服务器处理写操作以及实时性要求比较高的读操作，而从服务器处理读操作。<br>读写分离能提高性能的原因在于：<br>1.主从服务器负责各自的读和写，极大程度缓解了锁的争用；<br>2.从服务器可以使用 MyISAM，提升查询性能以及节约系统开销；<br>增加冗余，提高可用性。<br>3.读写分离常用代理方式来实现，代理服务器接收应用层传来的读写请求，然后决定转发到哪个服务器。  1.<br><img src="http://img.027cgb.com/613363/012802.jpg" alt="avator">  </p>
+<h3 id="MySQL-Proxy安装-MySQL-Proxy-相当于是封装了MysqlServer"><a href="#MySQL-Proxy安装-MySQL-Proxy-相当于是封装了MysqlServer" class="headerlink" title="MySQL-Proxy安装  ( MySQL-Proxy)相当于是封装了MysqlServer"></a>MySQL-Proxy安装  ( MySQL-Proxy)相当于是封装了MysqlServer</h3><p>准备一台机器作为MySQL Proxy<br>上传压缩包<br>解压缩<br>tar -xf mysql-proxy-0.8.5-linux-el6-x86-64bit.tar.gz -C /kkb  </p>
+<h3 id="MySQL-Proxy配置"><a href="#MySQL-Proxy配置" class="headerlink" title="MySQL-Proxy配置"></a>MySQL-Proxy配置</h3><p>1.创建mysql-proxy.cnf文件<br><img src="http://img.027cgb.com/613363/012803.jpg" alt="avator"><br>并进行相关配置<br>2.修改mysql-proxy.cnf文件的权限<br>3.修改rw-splitting.lua脚本（mysql-proxy/share/doc/mysql-proxy/rw-splitting.lua）<br><img src="http://img.027cgb.com/613363/012804.jpg" alt="avator"><br>4.MySQL-Proxy启动域测试<br>./mysql-proxy  –defaults-file=mysql-proxy.cnf配置文件的地址<br>在其他客户端，通过mysql命令去连接MySQL Proxy机器  </p>
+<h2 id="MySQL分库分表"><a href="#MySQL分库分表" class="headerlink" title="MySQL分库分表"></a>MySQL分库分表</h2><p><img src="http://img.027cgb.com/613363/012901.png" alt="avator"><br>MyCAT使用Mysql的通讯协议模拟成了一个Mysql服务器，并建立了完整的Schema（数据库）、Table （数据表）、User(用户)的逻辑模型，并将这套逻辑模型映射到后端的存储节点DataNode（MySQL Instance）上的真实物理库中，这样一来，所有能使用Mysql的客户端以及编程语言都能将MyCAT当成是Mysql Server来使用，不必开发新的客户端协议。<br>Mycat的安装就不介绍了，记住首先得安装jdk<br>MyCAT支持水平分片与垂直分片：<br>1.水平分片：一个表格的数据分割到多个节点上，按照行分隔。<br>2.垂直分片：一个数据库中多个表格A，B，C，A存储到节点1上，B存储到节点2上，C存储到节点3上。  </p>
+<p>1、Schema：逻辑库，与MySQL中的Database（数据库）对应，一个逻辑库中定义了所包括的Table。<br>2、Table：表，即物理数据库中存储的某一张表，与传统数据库不同，这里的表格需要声明其所存储的逻辑数据节点DataNode。在此可以指定表的分片规则。<br>3、DataNode：MyCAT的逻辑数据节点，是存放table的具体物理节点，也称之为分片节点，通过DataSource来关联到后端某个具体数据库上<br>4、DataSource：定义某个物理库的访问地址，用于捆绑到Datanode上  </p>
+<p>模拟需求：把商品表分片存储到三个数据节点上。<br>1.在MySQL的配置文件中my.ini [mysqld] 中增加一行<br>　　lower_case_table_names = 1  设置为Mysql大小写不敏感<br>2.Schema.xml配置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE mycat:schema SYSTEM &quot;schema.dtd&quot;&gt;</span><br><span class="line">&lt;mycat:schema xmlns:mycat=&quot;http://org.opencloudb/&quot;&gt;</span><br><span class="line"></span><br><span class="line">	&lt;schema name=&quot;TESTDB&quot; checkSQLschema=&quot;false&quot; sqlMaxLimit=&quot;100&quot;&gt;</span><br><span class="line">		&lt;!-- auto sharding by id (long) --&gt;</span><br><span class="line">		&lt;table name=&quot;TB_ITEM&quot; dataNode=&quot;dn1,dn2,dn3&quot; rule=&quot;auto-sharding-long&quot; /&gt;</span><br><span class="line">		&lt;table name=&quot;TB_USER&quot; primaryKey=&quot;ID&quot; type=&quot;global&quot; dataNode=&quot;dn1,dn2&quot; /&gt;</span><br><span class="line">	&lt;/schema&gt;</span><br><span class="line">	&lt;dataNode name=&quot;dn1&quot; dataHost=&quot;localhost1&quot; database=&quot;db1&quot; /&gt;</span><br><span class="line">	&lt;dataNode name=&quot;dn2&quot; dataHost=&quot;localhost2&quot; database=&quot;db2&quot; /&gt;</span><br><span class="line">	&lt;dataNode name=&quot;dn3&quot; dataHost=&quot;localhost1&quot; database=&quot;db3&quot; /&gt;</span><br><span class="line">	&lt;dataHost name=&quot;localhost1&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;0&quot;</span><br><span class="line">		writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;1&quot;  slaveThreshold=&quot;100&quot;&gt;</span><br><span class="line">		&lt;heartbeat&gt;select user()&lt;/heartbeat&gt;</span><br><span class="line">		&lt;!-- can have multi write hosts --&gt;</span><br><span class="line">		&lt;writeHost host=&quot;hostM1&quot; url=&quot;192.168.25.134:3306&quot; user=&quot;root&quot;</span><br><span class="line">			password=&quot;root&quot;&gt;</span><br><span class="line">			&lt;!-- can have multi read hosts --&gt;</span><br><span class="line"></span><br><span class="line">		&lt;/writeHost&gt;</span><br><span class="line">	&lt;/dataHost&gt;</span><br><span class="line">	&lt;dataHost name=&quot;localhost2&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;0&quot;</span><br><span class="line">		writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;1&quot;  slaveThreshold=&quot;100&quot;&gt;</span><br><span class="line">		&lt;heartbeat&gt;select user()&lt;/heartbeat&gt;</span><br><span class="line">		&lt;!-- can have multi write hosts --&gt;</span><br><span class="line">		&lt;writeHost host=&quot;hostM1&quot; url=&quot;192.168.25.166:3306&quot; user=&quot;root&quot;</span><br><span class="line">			password=&quot;root&quot;&gt;</span><br><span class="line">			&lt;!-- can have multi read hosts --&gt;</span><br><span class="line">		&lt;/writeHost&gt;</span><br><span class="line">	&lt;/dataHost&gt;</span><br><span class="line">&lt;/mycat:schema&gt;</span><br></pre></td></tr></table></figure></p>
+<p>3.配置server.xml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;user name=&quot;test&quot;&gt;</span><br><span class="line">    &lt;property name=&quot;password&quot;&gt;test&lt;/property&gt;</span><br><span class="line">    &lt;property name=&quot;schemas&quot;&gt;TESTDB&lt;/property&gt;</span><br><span class="line">    &lt;property name=&quot;readOnly&quot;&gt;true&lt;/property&gt;</span><br><span class="line">&lt;/user&gt;</span><br></pre></td></tr></table></figure></p>
+<p>4.配置rule.xml<br>rule.xml里面就定义了我们对表进行拆分所涉及到的规则定义。我们可以灵活的对表使用不同的分片算法，或者对表使用相同的算法但具体的参数不同。这个文件里面主要有tableRule和function这两个标签。在具体使用过程中可以按照需求添加tableRule和function。</p>
+<h2 id="Mycat读写分离"><a href="#Mycat读写分离" class="headerlink" title="Mycat读写分离"></a>Mycat读写分离</h2><p>MyCat的读写分离是建立在MySQL主从复制基础之上实现的。<br><img src="http://img.027cgb.com/613363/012902.png" alt="avator"><br>只需要改变schema.xml的配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;dataNode name=&quot;dn1&quot; dataHost=&quot;localhost1&quot; database=&quot;db1&quot; /&gt;</span><br><span class="line">	&lt;dataNode name=&quot;dn2&quot; dataHost=&quot;localhost1&quot; database=&quot;db2&quot; /&gt;</span><br><span class="line">	&lt;dataNode name=&quot;dn3&quot; dataHost=&quot;localhost1&quot; database=&quot;db3&quot; /&gt;</span><br><span class="line">	&lt;dataHost name=&quot;localhost1&quot; maxCon=&quot;1000&quot; minCon=&quot;10&quot; balance=&quot;1&quot;</span><br><span class="line">		writeType=&quot;0&quot; dbType=&quot;mysql&quot; dbDriver=&quot;native&quot; switchType=&quot;2&quot;  slaveThreshold=&quot;100&quot;&gt;</span><br><span class="line">		&lt;heartbeat&gt;show slave status&lt;/heartbeat&gt;</span><br><span class="line">		&lt;writeHost host=&quot;hostM&quot; url=&quot;192.168.25.134:3306&quot; user=&quot;root&quot;</span><br><span class="line">			password=&quot;root&quot;&gt;</span><br><span class="line">			&lt;readHost host=&quot;hostS&quot; url=&quot;192.168.25.166:3306&quot; user=&quot;root&quot;</span><br><span class="line">			password=&quot;root&quot; /&gt;</span><br><span class="line">		&lt;/writeHost&gt;</span><br><span class="line">	&lt;/dataHost&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Balance参数设置：<br>1.balance=“0”, 所有读操作都发送到当前可用的writeHost上。<br>2.balance=“1”，所有读操作都随机的发送到readHost。<br>3.balance=“2”，所有读操作都随机的在writeHost、readhost上分发<br>WriteType参数设置：<br>1.writeType=“0”, 所有写操作都发送到可用的writeHost上。<br>2.writeType=“1”，所有写操作都随机的发送到readHost。<br>3.writeType=“2”，所有写操作都随机的在writeHost、readhost分上发。<br>switchType 目前有三种选择：<br>-1：表示不自动切换<br>1 ：默认值，自动切换<br>2 ：基于MySQL主从同步的状态决定是否切换  </p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://img.027cgb.com/613363/%E5%8B%BF%E6%89%B0%E6%97%A7%E4%BA%BAHy%20-%20%E6%8A%96%E9%9F%B3%E9%98%BF%E6%82%A0%E6%82%A0-%E4%B8%80%E6%9B%B2%E7%9B%B8%E6%80%9D%EF%BC%88%E5%AE%8C%E6%95%B4SQ%E7%89%88%EF%BC%89.mp3"></li>
+                    
+                        <li title="1" data-url="https://isujin.com/wp-content/uploads/2016/01/%E8%A1%97%E9%81%93%E7%9A%84%E5%AF%82%E5%AF%9E.mp3?_=1"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
