@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一辈子很长，要和有趣的人度过。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="SpringBoot整合单元测试1、添加依赖12345&amp;lt;dependency&amp;gt;           &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="一辈子很长，要和有趣的人度过。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">SpringBoot学习（第一次）</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">SpringBoot学习（第一次）</h1>
+        <div class="stuff">
+            <span>二月 02, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="SpringBoot整合单元测试"><a href="#SpringBoot整合单元测试" class="headerlink" title="SpringBoot整合单元测试"></a>SpringBoot整合单元测试</h2><p>1、添加依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">           &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">           &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</span><br><span class="line">           &lt;scope&gt;test&lt;/scope&gt;</span><br><span class="line">       &lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.其次需要在测试类上添加两个注解：<br>@RunWith(SpringRunner.class)<br>@SpringBootTest(classes=SpringBoot 启动类.class)  </p>
+<h2 id="SpringBoot多环境选择"><a href="#SpringBoot多环境选择" class="headerlink" title="SpringBoot多环境选择"></a>SpringBoot多环境选择</h2><p>在开发应用时，通常同一套程序会被运行在多个不同的环境，例如，开发、测试、生产  环境等。每个环境的数据库地址、服务器端口号等配置都会不同。若在不同环境下运行时将  配置文件修改为不同内容，那么，这种做法不仅非常繁琐，而且很容易发生错误。<br>在开发应用时，有时不同的环境，其需要运行的接口的实现类也是不同的。例如，若要  开发一个具有短信发送功能的应用，开发环境中要执行的 send()方法仅需调用短信模拟器即可，而生产环境中要执行的  send()则需要调用短信运营商所提供的短信发送接口。这种情况下，就需要开发两个相关接口的实现类去实现send()方法。<br>对于不同的环境，需要使用不同的配置文件，执行不同的类。而这个选择只需在 SpringBoot 的主配置文件中指定即可。<br>1.定义多个配置文件<br>在src/main/resources 中再定义两个配置文件，分别对应开发环境与生产环境。<br>2.在Spring Boot 中多环境配置文件名需要满足 application-{profile}.properties 的格式，其中{profile}为对应的环境标识，例如:<br>application-dev.properties：开发环境<br>application-test.properties：测试环境<br>application-prod.properties：生产环境<br>至于哪个配置文件会被加载，则需要在application.properties 文件中通过spring.profiles.active 属性来设置，其值对应{profile}值。例如，spring.profiles.active=test 就会加载application-test.properties 配置文件内容。<br>在生产环境下，application.properties 中一般配置通用内容，并设置 spring.profiles.active 属性的值为dev，即，直接指定要使用的配置文件为开发时的配置文件，而对于其它环境的  选择，一般是通过命令行方式去激活。配置文件 application-{profile}.properties 中则配置各个环境的不同内容。<br>3.在实现类上添加@Profile注解，并在注解参数中指定前述配置文件中的{profile}值，用于指定该实现类所适用的环境。</p>
+<h2 id="SpringBoot读取自定义设置"><a href="#SpringBoot读取自定义设置" class="headerlink" title="SpringBoot读取自定义设置"></a>SpringBoot读取自定义设置</h2><p>1.读取指定配置文件中的属性<br>一般情况下，主配置文件中存放系统中定义好的属性设置，而自定义属性一般会写入自  定义的配置文件中。也就是说，Java     代码除了可以读取主配置文件中的属性外，还可以读取指定配置文件中的属性，可以通过@PropertySource 注解加载指定的配置文件。<br>2.通过@Value(“${ }”)读取指定的自定义属性  </p>
+<h2 id="SpringBoot使用jsp页面"><a href="#SpringBoot使用jsp页面" class="headerlink" title="SpringBoot使用jsp页面"></a>SpringBoot使用jsp页面</h2><p>1.添加 jasper 依赖<br>在pom 中添加一个Tomcat 内嵌的jsp 引擎 jasper 依赖。jsp 引擎是用于解析jsp 文件的， 即将 jsp 文件解析为Servlet 是由 jsp 引擎完成的。embed，嵌入。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;tomcat-embed-jasper&lt;/artifactId&gt;</span><br><span class="line">  &lt;/dependency&gt;</span><br><span class="line">```  </span><br><span class="line">2.注册 webapp 目录    </span><br><span class="line">在pom 文件中将webapp 目录注册为资源目录。</span><br></pre></td></tr></table></figure></p>
+ <!--注册webapp目录为资源目录-->
+<pre><code>&lt;resource&gt;
+    &lt;directory&gt;src/main/webapp&lt;/directory&gt;
+        &lt;targetPath&gt;META-INF/resources&lt;/targetPath&gt;
+            &lt;includes&gt;
+                &lt;include&gt;**/*.*&lt;/include&gt;
+            &lt;/includes&gt;
+&lt;/resource&gt;
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">3.关于静态资源请求  </span><br><span class="line">查看控制台的启动日志，DispatcherServlet 的&lt;url-pattern&gt;为/。我们之前在学习SpringMVC 时强调过，若DispatcherServlet 的&lt; url-pattern &gt;为/，则中央调度器会拦截静态资源，即所有静态资源是无法访问的，若要访问，则需要再行配置。但，通过前面的运行可知， Spring Boot 对于静态资源的访问是没有问题的。即，Spring Boot 已经处理好了静态资源访问问题。</span><br><span class="line">## SpringBoo使用Mybatis  </span><br><span class="line">1.MyBatis 与 Spring Boot 整合依赖</span><br></pre></td></tr></table></figure>
+<dependency><br>            <groupid>com.alibaba</groupid><br>            <artifactid>druid</artifactid><br>            <version>1.1.10</version><br>        </dependency>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;mysql&lt;/groupId&gt;
+    &lt;artifactId&gt;mysql-connector-java&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.mybatis.spring.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;mybatis-spring-boot-starter&lt;/artifactId&gt;
+    &lt;version&gt;1.3.2&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">2.下来就和SSM类似了dao-service-controller和xml文件的编写  </span><br><span class="line">3.修改主配置文件</span><br></pre></td></tr></table></figure>
+<h1 id="注册映射文件"><a href="#注册映射文件" class="headerlink" title="注册映射文件"></a>注册映射文件</h1><p>mybatis.mapper-locations=classpath:com/kaikeba/jspdemo/dao/EmployeeDao.xml</p>
+<h1 id="注册实体类别名"><a href="#注册实体类别名" class="headerlink" title="注册实体类别名"></a>注册实体类别名</h1><p>mybatis.type-aliases-package=com.kaikeba.jspdemo.bean</p>
+<h1 id="注册数据源类型"><a href="#注册数据源类型" class="headerlink" title="注册数据源类型"></a>注册数据源类型</h1><p>spring.datasource.type=com.alibaba.druid.pool.DruidDataSource</p>
+<h1 id="DB连接四要素"><a href="#DB连接四要素" class="headerlink" title="DB连接四要素"></a>DB连接四要素</h1><p>spring.datasource.driver-class-name=com.mysql.jdbc.Driver<br>spring.datasource.url=jdbc:mysql:///jdbctest<br>spring.datasource.username=root<br>spring.datasource.password=19980825<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">## SpringBoot的事务支持  </span><br><span class="line">1.在启动类上添加@EnableTransactionManagement 注解，开启事务</span><br><span class="line">2.在Service 实现类的方法上添加@Transactional 注解  </span><br><span class="line">## SpringBoot对日志的支持  </span><br><span class="line">Spring Boot 中使用的日志技术为 logback。其与 Log4J 都出自同一人，性能要优于 Log4J， 是Log4J 的替代者。  </span><br><span class="line">在Spring Boot 中若要使用logback，则需要具有 spring-boot-starter-logging 依赖，而该依赖被spring-boot-starter-web 所依赖，即不用直接导入 spring-boot-starter-logging 依赖。  </span><br><span class="line">1.核心配置文件中添加</span><br></pre></td></tr></table></figure></p>
+<h1 id="控制日志显示格式"><a href="#控制日志显示格式" class="headerlink" title="控制日志显示格式"></a>控制日志显示格式</h1><p>logging.pattern.console=%leven %msg%n<br>logging.level.root=warn<br>logging.level.com.kaikeba.jspdemo.dao=debug<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2.logback.xml放在 src/main/resources 类路径下。</span><br></pre></td></tr></table></figure></p>
+<p>&lt;?xml version=”1.0” encoding=”UTF-8”?&gt;</p>
+<p><configuration><br>  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"><br>    <encoder><br>      <pattern>%-5level - %msg%n</pattern><br>    </encoder><br>  </appender></configuration></p>
+  <root level="WARN"><br>    <appender-ref ref="STDOUT"><br>  </appender-ref></root>
+
+<p>  <logger name="com.abc.primary.dao" level="DEBUG"><br><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## Spring Boot 中使用 Redis  </span><br><span class="line">使用Redis 缓存的数据划分为两类：DB 中相关表更新后，Redis 缓存中的存放的相关数据要清除，否则客户端获取到的就不是最新数据，这是一类数据；还有一类数据是，对数据   的准确性要求不是很高的数据，其可以与 DB 中数据不一致，但差别不能太大，所以该类数据一般会设置过期时效。  </span><br><span class="line">1.都需要的步骤    </span><br><span class="line">* 在pom 文件中添加spring boot 与redis 整合依赖</span><br></pre></td></tr></table></figure></logger></p>
+<p><dependency><br>    <groupid>org.springframework.boot</groupid><br>    <artifactid>spring-boot-starter-redis</artifactid><br>    <version>1.3.1.RELEASE</version><br></dependency><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* 在主配置文件中注册redis 连接信息、MyBatis 中实体类的别名</span><br></pre></td></tr></table></figure></p>
+<p>#SpringBoot连接redis<br>spring.redis.host=redisOs<br>spring.redis.url=<br>spring.redis.password=</p>
+<p>#连接redis集群   哨兵机制<br>spring.redis.sentinel.master=mymaster   #哨兵监控的主机名<br>spring.redis.sentinel.nodes=sentinel:6379,sentinel:6380  </p>
+<h1 id="指定cache类型"><a href="#指定cache类型" class="headerlink" title="指定cache类型"></a>指定cache类型</h1><p>spring.cache.type=redis</p>
+<h1 id="设置cache名称"><a href="#设置cache名称" class="headerlink" title="设置cache名称"></a>设置cache名称</h1><p>spring.cache.cache-names=realTimeCache<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">* 由于要将查询的实体类对象缓存到 Redis，Redis 要求实体类必须序列化。所以需要实体类实现序列化接口  </span><br><span class="line"></span><br><span class="line">2.使用注解方式还需要的步骤  </span><br><span class="line">* 在工程入口类上添加@EnableCaching 注解  </span><br><span class="line">* 在查询方法上添加@Cacheable 注解，在增删改方法上添加@CacheEvict 注解  </span><br><span class="line">* 在主配置文件中注册缓存空间名称</span><br><span class="line"></span><br><span class="line">3.使用 API 方式还需要的步骤  </span><br><span class="line">* Service 中被自动注入的RedisTemplate 需要的泛型，key 与value 要求类型相同，要么都是String，要么都是 Object。建议使用 Object，其通用性更好  </span><br><span class="line">* 在Service 的查询方法中通过RedisTemplate 对象获取到Redis 的操作对象，然后再对Redis进行读写操作</span><br><span class="line">4.双重检锁检查热点缓存问题--缓存雪崩问题</span><br></pre></td></tr></table></figure></p>
+<p> // 使用双重检测锁解决热点缓存问题<br>    @Override<br>    public Integer findEmployeeCount() {<br>        // 获取Redis操作对象<br>        BoundValueOperations&lt;Object, Object&gt; ops = redisTemplate.boundValueOps(“count”);<br>        // 从缓存中读取数据<br>        Object count = ops.get();<br>        if(count == null) {<br>           synchronized (this) {<br>                count = ops.get();<br>                if(count == null) {<br>                    // 从DB中查询<br>                    count = dao.selectEmployeeCount();<br>                    // 将查询的数据写入到Redis缓存，并设置到期时限<br>                    ops.set(count, 10, TimeUnit.SECONDS);<br>                }<br>            }<br>        }<br>        return (Integer) count;<br>    }<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## SpringBoot使用拦截器</span><br><span class="line">在非Spring Boot 工程中若要使用SpringMVC 的拦截器，在定义好拦截器后，需要在 Spring 配置文件中对其进行注册。但 Spring Boot 工程中没有了Spring 配置文件，那么如何使用拦截器呢？  </span><br><span class="line">Spring Boot 对于原来在配置文件配置的内容，现在全部体现在一个类中，该类需要继承自WebMvcConfigurationSupport 类，并使用@Configuration 进行注解，表示该类为一个</span><br><span class="line">JavaConfig 类，其充当配置文件的角色。</span><br></pre></td></tr></table></figure></p>
+<p>public class SomeIntercepter implements HandlerInterceptor {<br>    @Override<br>    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {<br>        System.out.println(“执行拦截器”);<br>        return true;<br>    }<br>}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">定义拦截器的配置文件</span><br><span class="line">@Configuration   // 表示当前类为CodeConfig类，即充当Spring容器</span><br></pre></td></tr></table></figure></p>
+<p>public class SomeWebMvcConfig extends WebMvcConfigurationSupport {<br>    @Override<br>    protected void addInterceptors(InterceptorRegistry registry) {<br>        SomeIntercepter someIntercepter = new SomeIntercepter();<br>        registry.addInterceptor(someIntercepter)<br>                .addPathPatterns(“/first/**”)   // 拦截first开关的请求<br>                .excludePathPatterns(“/first/aaa”);  // 不拦截second开头的请求<br>    }<br>}<br><code>`</code></p>
+<h2 id="Spring-Boot-中使用-Filter"><a href="#Spring-Boot-中使用-Filter" class="headerlink" title="Spring Boot 中使用 Filter"></a>Spring Boot 中使用 Filter</h2><p>若使用的是 Servlet3.0+版本，可以直接使用 Filter 的注解对 Filter 进行注册。其总步骤有两步：<br>1.在定义好的 Filter 上使用@WebFilter 注解<br>2.在入口类上添加@ServletComponentScan 注解</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://img.027cgb.com/613363/%E5%8B%BF%E6%89%B0%E6%97%A7%E4%BA%BAHy%20-%20%E6%8A%96%E9%9F%B3%E9%98%BF%E6%82%A0%E6%82%A0-%E4%B8%80%E6%9B%B2%E7%9B%B8%E6%80%9D%EF%BC%88%E5%AE%8C%E6%95%B4SQ%E7%89%88%EF%BC%89.mp3"></li>
+                    
+                        <li title="1" data-url="https://isujin.com/wp-content/uploads/2016/01/%E8%A1%97%E9%81%93%E7%9A%84%E5%AF%82%E5%AF%9E.mp3?_=1"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
