@@ -10,12 +10,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <meta name="keywords" content="Fechin,"> 
+    
     <meta name="description" content="当我们在使用分库分表或者一致性缓存的问题，一定会考虑到如何将数据均匀的分散到各个节点之中，以减少数据节点的加减对数据迁移的影响，而一致性Hash算法就是来解决这个问题的。
 一致性Hash算法（概念）,"> 
     <meta name="author" content="ZhangYang"> 
-    <link rel="alternative" href="atom.xml" title="认真的人，自带光芒。" type="application/atom+xml"> 
-    <link rel="icon" href="/img/favicon.png"> 
+    
+    
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
     <link rel="stylesheet" href="/css/diaspora.css">
 </head></html>
@@ -65,38 +65,18 @@
 <p>要使用另外一种方法仅仅改变那个TreeMapConsistenceHash就可以了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package com.hash.comsistencehash;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @Author: ZhangYang</span><br><span class="line"> * @Date: 2019/4/11 23:35</span><br><span class="line"> */</span><br><span class="line">public class TestConsistenceHash &#123;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        AbstractConsistenceHash map=new TreeMapConsistenceHash();</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; strings=new ArrayList&lt;&gt;();</span><br><span class="line">        for(int i=0;i&lt;10;i++)&#123;</span><br><span class="line">            strings.add(&quot;127.0.0.&quot;+i);</span><br><span class="line">        &#125;</span><br><span class="line">        String process=map.process(strings,&quot;张阳&quot;);</span><br><span class="line">        System.out.println(process);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
-            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
                 <source type="audio/mpeg" src="">
             </audio>
             
                 <ul id="audio-list" style="display:none">
                     
-                        <li title="0" data-url="http://img.027cgb.com/613363/%E5%8B%BF%E6%89%B0%E6%97%A7%E4%BA%BAHy%20-%20%E6%8A%96%E9%9F%B3%E9%98%BF%E6%82%A0%E6%82%A0-%E4%B8%80%E6%9B%B2%E7%9B%B8%E6%80%9D%EF%BC%88%E5%AE%8C%E6%95%B4SQ%E7%89%88%EF%BC%89.mp3"></li>
-                    
-                        <li title="1" data-url="https://isujin.com/wp-content/uploads/2016/01/%E8%A1%97%E9%81%93%E7%9A%84%E5%AF%82%E5%AF%9E.mp3?_=1"></li>
-                    
-                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
-                    
-                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
-                    
-                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
-                    
-                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
-                    
-                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
-                    
                 </ul>
             
         </div>
         
-    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
-
 
     </div>
-    
-        <div class="side">
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一致性Hash算法（概念）"><span class="toc-number">1.</span> <span class="toc-text">一致性Hash算法（概念）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#容错性"><span class="toc-number">1.1.</span> <span class="toc-text">容错性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#扩展性"><span class="toc-number">1.2.</span> <span class="toc-text">扩展性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#虚拟几点"><span class="toc-number">1.3.</span> <span class="toc-text">虚拟几点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一致性Hash算法（实现）"><span class="toc-number">2.</span> <span class="toc-text">一致性Hash算法（实现）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一。自定义有序的map"><span class="toc-number">2.1.</span> <span class="toc-text">一。自定义有序的map</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二。使用TreeMap"><span class="toc-number">2.2.</span> <span class="toc-text">二。使用TreeMap</span></a></li></ol></li></ol>
-        </div>
     
 </div>
 

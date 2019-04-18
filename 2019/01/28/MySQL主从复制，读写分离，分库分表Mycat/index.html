@@ -10,12 +10,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate">
-    <meta name="keywords" content="Fechin,"> 
+    
     <meta name="description" content="当我们在使用分库分表或者一致性缓存的问题，一定会考虑到如何将数据均匀的分散到各个节点之中，以减少数据节点的加减对数据迁移的影响，而一致性Hash算法就是来解决这个问题的。
 一致性Hash算法（概念）,"> 
     <meta name="author" content="ZhangYang"> 
-    <link rel="alternative" href="atom.xml" title="认真的人，自带光芒。" type="application/atom+xml"> 
-    <link rel="icon" href="/img/favicon.png"> 
+    
+    
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
     <link rel="stylesheet" href="/css/diaspora.css">
 </head></html>
@@ -74,38 +74,18 @@
 <p>Balance参数设置：<br>1.balance=“0”, 所有读操作都发送到当前可用的writeHost上。<br>2.balance=“1”，所有读操作都随机的发送到readHost。<br>3.balance=“2”，所有读操作都随机的在writeHost、readhost上分发<br>WriteType参数设置：<br>1.writeType=“0”, 所有写操作都发送到可用的writeHost上。<br>2.writeType=“1”，所有写操作都随机的发送到readHost。<br>3.writeType=“2”，所有写操作都随机的在writeHost、readhost分上发。<br>switchType 目前有三种选择：<br>-1：表示不自动切换<br>1 ：默认值，自动切换<br>2 ：基于MySQL主从同步的状态决定是否切换  </p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
-            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
                 <source type="audio/mpeg" src="">
             </audio>
             
                 <ul id="audio-list" style="display:none">
                     
-                        <li title="0" data-url="http://img.027cgb.com/613363/%E5%8B%BF%E6%89%B0%E6%97%A7%E4%BA%BAHy%20-%20%E6%8A%96%E9%9F%B3%E9%98%BF%E6%82%A0%E6%82%A0-%E4%B8%80%E6%9B%B2%E7%9B%B8%E6%80%9D%EF%BC%88%E5%AE%8C%E6%95%B4SQ%E7%89%88%EF%BC%89.mp3"></li>
-                    
-                        <li title="1" data-url="https://isujin.com/wp-content/uploads/2016/01/%E8%A1%97%E9%81%93%E7%9A%84%E5%AF%82%E5%AF%9E.mp3?_=1"></li>
-                    
-                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
-                    
-                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
-                    
-                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
-                    
-                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
-                    
-                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
-                    
                 </ul>
             
         </div>
         
-    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
-
 
     </div>
-    
-        <div class="side">
-            <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MySQL主从复制"><span class="toc-number">1.</span> <span class="toc-text">MySQL主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#主服务器的配置："><span class="toc-number">1.1.</span> <span class="toc-text">主服务器的配置：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#从服务器配置"><span class="toc-number">1.2.</span> <span class="toc-text">从服务器配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#集群搭建之读写分离"><span class="toc-number">2.</span> <span class="toc-text">集群搭建之读写分离</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL-Proxy安装-MySQL-Proxy-相当于是封装了MysqlServer"><span class="toc-number">2.0.1.</span> <span class="toc-text">MySQL-Proxy安装  ( MySQL-Proxy)相当于是封装了MysqlServer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL-Proxy配置"><span class="toc-number">2.0.2.</span> <span class="toc-text">MySQL-Proxy配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL分库分表"><span class="toc-number">2.1.</span> <span class="toc-text">MySQL分库分表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mycat读写分离"><span class="toc-number">2.2.</span> <span class="toc-text">Mycat读写分离</span></a></li></ol>
-        </div>
     
 </div>
 
