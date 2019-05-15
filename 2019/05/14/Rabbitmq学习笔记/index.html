@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hans" class="loading">
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>认真的人，自带光芒。</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate">
+    <meta name="keywords" content="ZhangYang,"> 
+    <meta name="description" content="rabbitMQ介绍rabbitMQ 是一个开源的消息代理和队列服务器，用来通过普通协议在完全不同的应用之间的共享数据，即跨平台。它是使用 Erlang 语言来编写的，并且 rabbitMQ 是基于,"> 
+    <meta name="author" content="ZhangYang"> 
+    <link rel="alternative" href="atom.xml" title="认真的人，自带光芒。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+</head></html>
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Rabbitmq学习笔记</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class="main">
+        <h1 class="title">Rabbitmq学习笔记</h1>
+        <div class="stuff">
+            <span>五月 14, 2019</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="rabbitMQ介绍"><a href="#rabbitMQ介绍" class="headerlink" title="rabbitMQ介绍"></a>rabbitMQ介绍</h2><p>rabbitMQ 是一个开源的消息代理和队列服务器，用来通过普通协议在完全不同的应用之间的共享数据，即跨平台。它是使用 Erlang 语言来编写的，并且 rabbitMQ 是基于 AMQP 协议的。<br>特点：<br>开源，性能优秀，稳定性保障;<br>提供可靠性消息投递模式 (confirm)，返回模式 (return);<br>与 SpringAMQP 完美的结合，API丰富;<br>集群模式丰富，表达式配置，HA模式，镜像队列模型（常用）;<br>保证数据不丢失的前提做到高可靠性，可用性。<br>AMQP 协议模型图示，生产者 publisher 将消息放到服务器 server 上，再到虚拟主机 virtual host ，才到 exchange 上，然后 exchange 根据路由键把当前消息投递到对应的 queue 当中，消费者监听指定的 queue 即可获得消息。<br><img src="https://upload-images.jianshu.io/upload_images/9167995-fecc87b514c423c7?imageMogr2/auto-orient/strip%7CimageView2/2/w/865/format/webp" alt="avator"><br>AMQP 核心概念:<br>server: 又称 broker，也就是服务端，接受客户端的连接，实现 AMQP 实体服务<br>Connection： 连接，应用程序与 broker 的网络连接.<br>channel: 网络信道，几乎所有的操作都在 channel 中进行，channel 是进行消息读写的通道。客户端可建立多个 channel，每个 channel 代表一个回话任务。</p>
+<p>message: 消息，服务器和应用程序之间传送的数据，由 properties 和 body 组成。<br>properties  可以对消息进行修饰，比如消息的优先级/延迟等高级特性;<br>body 就是消息体内容。</p>
+<p>virtual host: 虚拟地址，用于进行逻辑隔离，是最上层的消息路由，是一个逻辑概念， 最上层的消息路由，类似 redis 分 16 个逻辑数据库。一个 virtual host 里面可以有若干个 exchange 和 queue，同一个  virtual host 里面不能有相同名称的 exchange 或 queue。</p>
+<p>exchange: 交换机，接收消息，根据路由键 routingKey 转发消息到绑定的队列。<br>生产者直接把消息放到 exchange 里面，exchange 根据路由键转发消息到绑定的队列里面， exchange 和队列有一个绑定的关系<br>binding: exchange 和 queue 之间的虚拟连接，binding 中可以包含r outing key</p>
+<p>routing key: 一个路由规则，虚拟机可用它来确定如何路由一个特定消息。<br>queue: 也成为 massage queue，消息队列，保存消息并将它们转发给消费者。</p>
+<h2 id="RabbitMQ-幂等性概念及解决方案"><a href="#RabbitMQ-幂等性概念及解决方案" class="headerlink" title="RabbitMQ 幂等性概念及解决方案"></a>RabbitMQ 幂等性概念及解决方案</h2><p>一、什么是幂等性<br>可以参考数据库乐观锁机制，比如执行一条更新库存的 SQL 语句，在并发场景，为了性能和数据可靠性，会在更新时加上查询时的版本，并且更新这个版本信息。可能你要对一个事情进行操作，这个操作可能会执行成百上千次，但是操作结果都是相同的，这就是幂等性。  类似于支付宝支付业务</p>
+<p>二、消费端的幂等性保障<br>在海量订单生成的业务高峰期，生产端有可能就会重复发生了消息，这时候消费端就要实现幂等性，这就意味着我们的消息永远不会被消费多次，即使我们收到了一样的消息。<br>1.唯一 ID + 指纹码 机制，利用数据库主键去重<br>指纹码是为了应对用户在一瞬间的频繁操作，这个指纹码可能是我们的一些规则或者时间戳加别的服务给到的唯一信息码，它并不一定是我们系统生成的，基本都是由我们的业务规则拼接而来，但是一定要保证唯一性，然后就利用查询语句进行判断这个id是否存在数据库中。<br>优点：就是实现简单，就一个拼接，然后查询判断是否重复。<br>缺点：就是在高并发时，如果是单个数据库就会有写入性能瓶颈<br>解决方案 ：根据 ID 进行分库分表，对 id 进行算法路由，落到一个具体的数据库，然后当这个 id 第二次来又会落到这个数据库，这时候就像我单库时的查重一样了。利用算法路由把单库的幂等变成多库的幂等，分摊数据流量压力，提高性能。<br>2.利用redis的原子性去实现</p>
+<h2 id="RabbitMQ-100-投递成功方案"><a href="#RabbitMQ-100-投递成功方案" class="headerlink" title="RabbitMQ 100% 投递成功方案"></a>RabbitMQ 100% 投递成功方案</h2><p>一. 生产端的可靠性投递  </p>
+<ol>
+<li>保障消息的成功发出  </li>
+<li>保障MQ节点的成功接收  </li>
+<li>发送端收到MQ节点（broker）确认应答  </li>
+<li>完善的消息补偿机制  </li>
+</ol>
+<p>二、解决方案<br>1.：消息落库，对消息状态进行达标。具体来说就是将消息持久化到数据库并设置状态值，收到消费端的应答就改变当前记录的状态。再用轮询去重新发送没接收到应答的消息，注意这里要设置重试次数。<br><img src="https://upload-images.jianshu.io/upload_images/9167995-911c4abf693613dc?imageMogr2/auto-orient/strip%7CimageView2/2/w/937/format/webp" alt="avator"><br>2.延迟投递，做二次确认，回调检查<br><img src="https://upload-images.jianshu.io/upload_images/9167995-a433ad295d679a57?imageMogr2/auto-orient/strip%7CimageView2/2/w/1000/format/webp" alt="avator"></p>
+<p>这种方案也是无法做到 100% 的可靠传递，在特别极端的情况，还是需要定时任务和补偿机制进行辅助的。但是这种方案的优点是减少数据库操作，进而减少性能消耗。</p>
+<h3 id="详细学习一下Rabbitmq里面的组件的配置参数"><a href="#详细学习一下Rabbitmq里面的组件的配置参数" class="headerlink" title="详细学习一下Rabbitmq里面的组件的配置参数"></a>详细学习一下Rabbitmq里面的组件的配置参数</h3><p>1.Exchange交换机<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 1 声明交换机 </span><br><span class="line">channel.exchangeDeclare(exchangeName, exchangeType, true, false, false, null);</span><br></pre></td></tr></table></figure></p>
+<p>name: 交换机名称<br>type: 交换机类型 direct，topic，fanout，headers<br>durability: 是否需要持久化，true 为持久化<br>auto delete: 当最后一个绑定到 exchange 上的队列被删除后，exchange 没有绑定的队列了，自动删除该 exchange<br>internal: 当前 exchange 是否用于 rabbitMQ 内部使用，默认为 false<br>arguments: 扩展参数，用于扩展 AMQP 协议自制定化使用</p>
+<p>1.direct exchange类型<br>direct exchange: 所有发送到 direct exchange 的消息被转发到 routing key 中指定的queue，direct模式可以使用 rabbitMQ 自带exchange:default exchange，所以不需要将 exchange 进行任何绑定(binding)操作，消息传递时，routingkey 必须完全匹配才会被队列接收，否则该消息会被抛弃。<br>2.topic exchange 类型<br>topic exchange: 所有发送到 topic exchange 的消息被转发到所有关心routingkey 中 topic 的 queue 上exchange 将 routingkey 和某 topic 进行模糊匹配，此时队列需要绑定一个 topic<br>2.Queue<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 2 声明队列</span><br><span class="line">		channel.queueDeclare(queueName, false, false, false, null);</span><br></pre></td></tr></table></figure></p>
+<p>queue: 消息队列，实际存储消息数据<br>durable:表示是否持久化，队列的声明默认是存放到内存中的，如果rabbitmq重启会丢失，如果想重启之后还存在就要使队列持久化<br>exclusive：是否排外的，有两个作用，一：当连接关闭时connection.close()该队列是否会自动删除；二：该队列是否是私有的private，如果不是排外的，可以使用两个消费者都访问同一个队列，没有任何问题，如果是排外的，会对当前队列加锁，其他通道channel是不能访问的<br>auto delete: 如选择 yes，表示当最后一个监听被移除后，该 queue 会被自动删除。<br>arguments： 队列中的消息什么时候会自动被删除？</p>
+<p>下面梳理一下自己学习Rabbitmq的学习的点： </p>
+<p>一、Rabbitmq基础API的使用情况<br>1.RabbitMQ的Exchange的三种模式（direct，topic，fanout）<br>2.RabbitMQ 的 confirm 消息确认机制和 return 消息机制<br>3.RabbitMQ 的自定义消费者使用<br>4.RabbitMQ 消费端的限流策略<br>rabbitMQ 提供了一种 qos (服务质量保证)功能，即在非自动确认消息的前提下，如果一定数目的消息(通过基于 consume 或者 channel 设置 QOS 的值)未被确认前，不进行消费新的消息。关键代码就是在声明消费者代码里面的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//1 限流方式  第一件事就是 autoAck设置为 false</span><br><span class="line">	</span><br><span class="line">	channel.basicQos(0, 1, false);</span><br><span class="line">	</span><br><span class="line">	channel.basicConsume(queueName, false, new MyConsumer(channel));</span><br></pre></td></tr></table></figure></p>
+<p>prefetchSize：0<br>prefetchCount：会告诉 RabbitMQ 不要同时给一个消费者推送多于 N 个消息，即一旦有 N 个消息还没有 ack，则该 consumer 将 block 掉，直到有消息 ack<br>global：true、false 是否将上面设置应用于 channel，简单点说，就是上面限制是 channel 级别的还是 consumer 级别<br>5.RabbitMQ 消费端 ACK 与重回队列机制：</p>
+<ol>
+<li>消费端进行消费的时候，如果由于业务异常导致失败了，返回 NACK 达到最大重试次数，此时我们可以进行日志的记录，然后手动 ACK 回去，最后对这个记录进行补偿。</li>
+<li>或者由于服务器宕机等严重问题，导致 ACK 和 NACK 都没有，那我们就需要手工进行 ACK 保障消费端消费成功，再通过补偿机制补偿。<br>6.Rabbitmq死信队列的Demo；</li>
+</ol>
+<p>消费端的重回队列<br>消费端的重回队列是为了对没有处理成功的消息，把消息重新递给 broker。</p>
+<p>二、RabbitMQ和Spring的整合  (SpringAMQP的使用)</p>
+<p>1.SpringAMQP 消息容器 - SimpleMessageListenerContainer<br>这个类可以进行很多的设置，用对于消费者的配置项，这个类都可以满足。它有监听单个或多个队列、自动启动、自动声明功能。<br>它可以设置事务特性、事务管理器、事务属性、事务并发、是否开启事务、回滚消息等。但是我们在实际生产中，很少使用事务，基本都是采用补偿机制。<br>它可以设置消费者数量、最小最大数量、批量消费 。<br>它可以设置消息确认和自动确认模式、是否重回队列、异常捕获 Handler 函数。<br>它可以设置消费者标签生成策略、是否独占模式、消费者属性等。<br>它还可以设置具体的监听器、消息转换器等等。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">    public SimpleMessageListenerContainer simpleMessageListenerContainer(ConnectionFactory connectionFactory)&#123;</span><br><span class="line">        SimpleMessageListenerContainer messageListenerContainer=new SimpleMessageListenerContainer(connectionFactory);</span><br><span class="line">        messageListenerContainer.setQueues(queue001(),queue002(),queue003(),queue_image(), queue_pdf());</span><br><span class="line">        messageListenerContainer.setConcurrentConsumers(1); //当前消费者数量</span><br><span class="line">        messageListenerContainer.setMaxConcurrentConsumers(5);  //最大消费者数量</span><br><span class="line">        messageListenerContainer.setDefaultRequeueRejected(false); //是否重回队列</span><br><span class="line">        messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.AUTO);  //签收模式</span><br><span class="line">        messageListenerContainer.setExposeListenerChannel(true);</span><br><span class="line">        messageListenerContainer.setConsumerTagStrategy(new ConsumerTagStrategy() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public String createConsumerTag(String queue) &#123;</span><br><span class="line">                return queue + &quot;_&quot; + UUID.randomUUID().toString();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        messageListenerContainer.setMessageListener(new ChannelAwareMessageListener() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void onMessage(Message message, Channel channel) throws Exception &#123;</span><br><span class="line">                String msg = new String(message.getBody());</span><br><span class="line">                System.err.println(&quot;----------消费者: &quot; + msg);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure></p>
+<p>2.SpringAMQP 消息适配器 - MessageListenerAdapter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">/*1 适配器方式. 默认是有自己的方法名字的：handleMessage</span><br><span class="line">        可以自己指定一个方法的名字: consumeMessage</span><br><span class="line">        也可以添加一个转换器: 从字节数组转换为String*//*</span><br><span class="line">        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());</span><br><span class="line">        adapter.setDefaultListenerMethod(&quot;consumeMessage&quot;);</span><br><span class="line">        messageListenerContainer.setMessageListener(adapter);</span><br><span class="line">        adapter.setMessageConverter(new TextMessageConverter());</span><br><span class="line">        return messageListenerContainer;*/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">       /* *//*2 适配器方式: 我们的队列名称 和 方法名称 也可以进行一一的匹配*//*</span><br><span class="line">        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());</span><br><span class="line">       // adapter.setMessageConverter(new TextMessageConverter());</span><br><span class="line">        Map&lt;String, String&gt; queueOrTagToMethodName = new HashMap&lt;&gt;();</span><br><span class="line">        queueOrTagToMethodName.put(&quot;queue001&quot;, &quot;method1&quot;);</span><br><span class="line">        queueOrTagToMethodName.put(&quot;queue002&quot;, &quot;method2&quot;);</span><br><span class="line">        adapter.setQueueOrTagToMethodName(queueOrTagToMethodName);</span><br><span class="line">        messageListenerContainer.setMessageListener(adapter);*/</span><br></pre></td></tr></table></figure></p>
+<p>3.SpringAMQP 消息转换器 - MessageConverter<br>我们在进行发送消息的时候，正常情况下消息体为二进制的数据方式进行传输，如果希望内部帮我们进行转换，或者指定自定义的转换器，就需要用到 MessageConverter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">/*//   1.1 支持json格式的转换器</span><br><span class="line">        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());</span><br><span class="line">        adapter.setDefaultListenerMethod(&quot;consumeMessage&quot;);</span><br><span class="line">        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();</span><br><span class="line">        adapter.setMessageConverter(jackson2JsonMessageConverter);</span><br><span class="line">        messageListenerContainer.setMessageListener(adapter);*/</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        /*// 1.2 DefaultJackson2JavaTypeMapper &amp; Jackson2JsonMessageConverter 支持java对象转换</span><br><span class="line"></span><br><span class="line">        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());</span><br><span class="line">        adapter.setDefaultListenerMethod(&quot;consumeMessage&quot;);</span><br><span class="line"></span><br><span class="line">        Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();</span><br><span class="line"></span><br><span class="line">        EnableAllJackson2JavaTypeMapper javaTypeMapper = new EnableAllJackson2JavaTypeMapper();</span><br><span class="line">        jackson2JsonMessageConverter.setJavaTypeMapper(javaTypeMapper);</span><br><span class="line"></span><br><span class="line">        adapter.setMessageConverter(jackson2JsonMessageConverter);</span><br><span class="line">        messageListenerContainer.setMessageListener(adapter);*/</span><br><span class="line"></span><br><span class="line">      /*  //1.3 DefaultJackson2JavaTypeMapper &amp; Jackson2JsonMessageConverter 支持java对象多映射转换</span><br><span class="line"></span><br><span class="line">         MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());</span><br><span class="line">         adapter.setDefaultListenerMethod(&quot;consumeMessage&quot;);</span><br><span class="line">         Jackson2JsonMessageConverter jackson2JsonMessageConverter = new Jackson2JsonMessageConverter();</span><br><span class="line">         EnableAllJackson2JavaTypeMapper javaTypeMapper = new EnableAllJackson2JavaTypeMapper();</span><br><span class="line"></span><br><span class="line">         Map&lt;String, Class&lt;?&gt;&gt; idClassMapping = new HashMap&lt;String, Class&lt;?&gt;&gt;();</span><br><span class="line">         idClassMapping.put(&quot;order&quot;, com.java.rabbitmq.entity.Order.class);</span><br><span class="line">         idClassMapping.put(&quot;packaged&quot;, com.java.rabbitmq.entity.Packaged.class);</span><br><span class="line"></span><br><span class="line">         javaTypeMapper.setIdClassMapping(idClassMapping);</span><br><span class="line"></span><br><span class="line">         jackson2JsonMessageConverter.setJavaTypeMapper(javaTypeMapper);</span><br><span class="line">         adapter.setMessageConverter(jackson2JsonMessageConverter);</span><br><span class="line">         messageListenerContainer.setMessageListener(adapter);</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">        //1.4 ext convert</span><br><span class="line"></span><br><span class="line">        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageDelegate());</span><br><span class="line">        adapter.setDefaultListenerMethod(&quot;consumeMessage&quot;);</span><br><span class="line"></span><br><span class="line">        //全局的转换器:</span><br><span class="line">        ContentTypeDelegatingMessageConverter convert = new ContentTypeDelegatingMessageConverter();</span><br><span class="line"></span><br><span class="line">        TextMessageConverter textConvert = new TextMessageConverter();</span><br><span class="line">        convert.addDelegate(&quot;text&quot;, textConvert);</span><br><span class="line">        convert.addDelegate(&quot;html/text&quot;, textConvert);</span><br><span class="line">        convert.addDelegate(&quot;xml/text&quot;, textConvert);</span><br><span class="line">        convert.addDelegate(&quot;text/plain&quot;, textConvert);</span><br><span class="line"></span><br><span class="line">        Jackson2JsonMessageConverter jsonConvert = new Jackson2JsonMessageConverter();</span><br><span class="line">        convert.addDelegate(&quot;json&quot;, jsonConvert);</span><br><span class="line">        convert.addDelegate(&quot;application/json&quot;, jsonConvert);</span><br><span class="line"></span><br><span class="line">        ImageMessageConverter imageConverter = new ImageMessageConverter();</span><br><span class="line">        convert.addDelegate(&quot;image/png&quot;, imageConverter);</span><br><span class="line">        convert.addDelegate(&quot;image&quot;, imageConverter);</span><br><span class="line"></span><br><span class="line">        PDFMessageConverter pdfConverter = new PDFMessageConverter();</span><br><span class="line">        convert.addDelegate(&quot;application/pdf&quot;, pdfConverter);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        adapter.setMessageConverter(convert);</span><br><span class="line">        messageListenerContainer.setMessageListener(adapter);</span><br><span class="line">        return messageListenerContainer;</span><br></pre></td></tr></table></figure></p>
+<p>4.SpringAMQP 之 RabbitTemplate<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Autowired</span><br><span class="line">  private RabbitTemplate rabbitTemplate;</span><br><span class="line">  @Test</span><br><span class="line">  public void testrabbitTemplate() throws Exception&#123;</span><br><span class="line">      MessageProperties messageProperties=new MessageProperties();</span><br><span class="line">      messageProperties.getHeaders().put(&quot;desc&quot;,&quot;信息描述...&quot;);</span><br><span class="line">      messageProperties.getHeaders().put(&quot;type&quot;,&quot;自定义消息类型...&quot;);</span><br><span class="line">      Message message=new Message(&quot;Hello Rabbitmq&quot;.getBytes(),messageProperties);</span><br><span class="line">      rabbitTemplate.convertAndSend(&quot;topic001&quot;, &quot;spring.map&quot;, message, new MessagePostProcessor() &#123;</span><br><span class="line">          @Override</span><br><span class="line">          public Message postProcessMessage(Message message) throws AmqpException &#123;</span><br><span class="line">              System.out.println(&quot;-----添加额外的属性&quot;);</span><br><span class="line">              message.getMessageProperties().getHeaders().put(&quot;desc&quot;,&quot;额外修改的信息描述&quot;);</span><br><span class="line">              message.getMessageProperties().getHeaders().put(&quot;attr&quot;,&quot;额外新加的属性&quot;);</span><br><span class="line">              return message;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>三.RabbitMQ 与 SpringBoot2.X 整合</p>
+<p>见代码。。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="true">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title="0" data-url="http://img.027cgb.com/613363/%E5%8B%BF%E6%89%B0%E6%97%A7%E4%BA%BAHy%20-%20%E6%8A%96%E9%9F%B3%E9%98%BF%E6%82%A0%E6%82%A0-%E4%B8%80%E6%9B%B2%E7%9B%B8%E6%80%9D%EF%BC%88%E5%AE%8C%E6%95%B4SQ%E7%89%88%EF%BC%89.mp3"></li>
+                    
+                        <li title="1" data-url="https://isujin.com/wp-content/uploads/2016/01/%E8%A1%97%E9%81%93%E7%9A%84%E5%AF%82%E5%AF%9E.mp3?_=1"></li>
+                    
+                        <li title="2" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E6%88%91%E6%80%80%E5%BF%B5%E7%9A%84%20(Live).mp3"></li>
+                    
+                        <li title="3" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E7%89%A7%E9%A9%AC%E5%9F%8E%E5%B8%82.mp3"></li>
+                    
+                        <li title="4" data-url="http://img.027cgb.com/613363/%E6%AF%9B%E4%B8%8D%E6%98%93%20-%20%E5%83%8F%E6%88%91%E8%BF%99%E6%A0%B7%E7%9A%84%E4%BA%BA%20(Live).mp3"></li>
+                    
+                        <li title="5" data-url="http://img.027cgb.com/613363/%E8%AE%B8%E5%B5%A9%20-%20%E6%9C%89%E4%BD%95%E4%B8%8D%E5%8F%AF.mp3"></li>
+                    
+                        <li title="6" data-url="http://img.027cgb.com/613363/%E6%9E%97%E4%BF%8A%E6%9D%B0%20-%20%E5%A5%B9%E8%AF%B4.mp3"></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id="gitalk-container" class="comment link" data-ae="false" data-ci="" data-cs="" data-r="" data-o="" data-a="" data-d="false">查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
